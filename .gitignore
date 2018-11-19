@@ -95,3 +95,10 @@ ENV/
 _site
 .sass-cache
 .jekyll-metadata
+
+*.csv
+connector-ldap.yml
+connector-umapi.yml
+user-sync-config.yml
+private.key
+
