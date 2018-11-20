@@ -20,12 +20,16 @@
 # highly recommended that you leave these values commented out
 # so that the default values are guaranteed to be used.
 server:
+  session_max_age: 1100
+  connection_pooling: False
+  retry_cooldown: 15
+#  timeout: 120
+#  retries: 3
+
   #host: usermanagement.adobe.io
   #endpoint: /v2/usermanagement
   #ims_host: ims-na1.adobelogin.com
   #ims_endpoint_jwt: /ims/exchange/jwt
-  #timeout: 120
-  #retries: 3
 
 # (required) enterprise organization settings
 # You must specify all five of these settings.  Consult the
