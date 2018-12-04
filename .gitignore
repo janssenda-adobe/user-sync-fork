@@ -104,3 +104,5 @@ connector-umapi.yml
 user-sync-config.yml
 private.key
 
+venv_build/
+release/*

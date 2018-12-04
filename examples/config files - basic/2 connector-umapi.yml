@@ -20,11 +20,12 @@
 # highly recommended that you leave these values commented out
 # so that the default values are guaranteed to be used.
 server:
-  session_max_age: 1100
-  connection_pooling: False
-  retry_cooldown: 15
-#  timeout: 120
-#  retries: 3
+   session_max_age: 1100
+   connection_pooling: True
+   log_endpoint_ip: True
+  # retry_cooldown: 5
+  # timeout: 120
+  # retries: 3
 
   #host: usermanagement.adobe.io
   #endpoint: /v2/usermanagement
@@ -42,7 +43,7 @@ enterprise:
   api_key: "API key goes here"
   client_secret: "Client secret goes here"
   tech_acct: "Tech account ID goes here"
-  priv_key_path: "path/to/private/key/file"
+  priv_key_path: "private.key"
 
   # (optional) As an alternative to priv_key_path, you can place the private key 
   # data directly in this file.  To do this, remove the priv_key_path entry above 
