@@ -14,55 +14,16 @@ matrix:
     - .travis/build-py36.sh
     - .travis/release.sh
     - python setup.py test
-  - env: IMG="ubuntu1604"
-    python:
-    - 2.7
-    install:
-    - .travis/install-ubuntu.sh
-    script:
-    - .travis/build-py27.sh
-    - .travis/release.sh
-    - python setup.py test
-  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
-    services:
-    - docker
-    # for logging purposes
-    python:
-    - 3.6
-    before_install:
-    - chmod +x .travis/*.sh
-    - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e TRAVIS_TAG="${TRAVIS_TAG}" ${OS} tail -f /dev/null
-    - docker ps
-    install:
-    - $SH .travis/install-centos.sh
-    script:
-    - $SH .travis/build-py36-centos.sh
-  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
-    services:
-    - docker
-    # for logging purposes
-    python:
-    - 2.7
-    before_install:
-    - chmod +x .travis/*.sh
-    - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e TRAVIS_TAG="${TRAVIS_TAG}" ${OS} tail -f /dev/null
-    - docker ps
-    install:
-    - $SH .travis/install-centos.sh
-    script:
-    - $SH .travis/build-py27.sh
-    - $SH .travis/release.sh
-    - $SH "python setup.py test"
-
 deploy:
   provider: releases
   api_key:
-    secure: p6QQnxJoqILH9jf1yo9HewkV7WxHqEhMac4PRmBjapxg26oi+52TZrpmDClvpO8vYeZ/c1Iagh1g5DHb9nZzb5VihV0wmLVeYm/o/fxuXpx5FyhlzNWOgcRsXDHa3lx3lOasYlSCtj3VCQymnGhnAJDYF3LN8gu9paykEoH0soYALFrFkvgwkzEaS9AXuLtVyiV0ic1H9pF93kvBijO7OIebx7EDObCTqfAQDHOoOM5Lo6A61n9vbuxKGC/Tq6x+LXHM32s4/xodO2Ctcqq5H0ebghR/Jb8ovajpIRup6Tp+WURMLDd6jhy7SOhbF9zofsaejhlmg4HGZacJNME5YRY8xHyVVznygDte2EBcFOftI/Et9wfgVuDe1+ceGWM0ah2sttBGoFWLRgWUUVQDKbYJJoTdPmsaRriKJEuqoK+YGI7y2Z+ZIibAZ9X8vQ3BVV9dYr9zxoaahducsb+8zln/AISKOBhESzLEKtZTPA3qv16N08qLGY6v5g4BJHKA3T+jo8NNNxSet/5kOiL7z9ciSJOrNela7rGrttLeTvWCcWRWSd7UNr9fFetuncDuUZf50j1ndVaG41UwTSbZxVGO+N5yG2GKGRujFP1npEc9jKcWzSiOl+Aw9Y3nGVhLffOGkTwAcoGhr4xQbs1yYNuL2jf84eA2ouBgEyxyQJE=
+    secure: BhYiumgaInTG0L+6oSVT5n0RQLus78V3NQejtCxnY5spPbTxsmP30KCAZkvzVedvOmZjssvDsz5KMPAxbPlgySQPZfal/cQSFv/9C/H5KI21MAOFXu1P+swyR83XGLgUH0DeCZV0NtTDsrpW/yuIoRLnWUqykS+V3j51vhH/IjrQeBhPGJR5G4CLE2/JdWdRlEzZOX/tjMpwXMxYv7mOcLlU8jfrEpAH0ahpINQxRm4rmvFrBgtQNpfBEHBh5tYlD47zrWloLJzreMxp07QZjM9xg/iftyjDd/y+wIkSbmQji9LRr/n1nAMmbB5h8ARHB6jaMqeJOQv7ugw0izSkUdWYv8y2AQI1ku25sanUEgbDCPUU/SzZGgtohx+Wm5CisYbU8LRUxX7VZQJ3dCqQbMAIlY4l047pePDLhllBCqI8XS6QU5ekirGrMWSbALBvT8do8QoOZ5y1I5owaA/uuYGvd80HYRGAHMtiMQEZrnM81HrceIUMRgrHp7bK+teM+3OwgC1NKMk6aWE41RKrheZ0MU7R/Nhk8X7EJq65DFiA/pnR2HDFfdgJdlizncG+lwO7RZNT4zrQAysmGgpnhVO63qDoB+kL2gCKI301NCLGSPf/81XTWMkD419in2nFpzYe9IYPh4dRsloZv/eaJrCZ6NokJJ/sBbPUMRW/x8A=
   file_glob: true
   file: release/*.gz
   skip_cleanup: true
   draft: true
-  on:
+  true:
     tags: true
-    repo: adobe-apiplatform/user-sync.py
+    repo: vossen-adobe/user-sync-fork
     all_branches: true
+
