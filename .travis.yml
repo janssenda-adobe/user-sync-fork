@@ -23,7 +23,7 @@ deploy:
   skip_cleanup: true
   draft: true
   true:
-    tags: true
+    tags: false
     repo: vossen-adobe/user-sync-fork
     all_branches: true
 
