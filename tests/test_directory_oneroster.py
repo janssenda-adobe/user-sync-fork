@@ -1,3 +1,5 @@
+import copy
+
 import mock
 import pytest
 
@@ -167,7 +169,6 @@ def test_load_users_and_groups(oneroster_connector, stub_api_response, stub_pars
 
 
 def test_create_user_object(user_factory, stub_api_response, stub_parse_results):
-
     user_factory.key_identifier = 'sourcedId'
     record = stub_api_response[0]
 
@@ -272,6 +273,27 @@ def test_get_attr_values():
 
     # Decode a string
     assert formatter.get_attribute_value(attributes, "byte") == "byteencoded"
+
+
+def test_get_scoped_users(oneroster_connector, stub_parse_results):
+    stub_parse_results['18125']['groups'] = {'product1'}
+    stub_parse_results['18317']['groups'] = {'product1'}
+    side_effect = copy.deepcopy(stub_parse_results)
+    side_effect['18125']['groups'] = {'product2'}
+    side_effect['18888'] = side_effect['18317']
+    side_effect.pop('18317')
+    side_effect['18888']['groups'] = {'product2'}
+    scoped_sources = []
+    scoped_sources.append(ScopedSource('client_id', 'client_secret', 'test_token', 'product1'))
+    scoped_sources.append(ScopedSource('client_id', 'client_secret', 'test_token', 'product2'))
+    with mock.patch("user_sync.connector.directory_oneroster.OneRosterConnector.get_connection") as connection:
+        with mock.patch("user_sync.connector.directory_oneroster.OneRosterConnector.get_all_users") as users_from_token:
+            connection.side_effect = [mock.MagicMock(), mock.MagicMock()]
+            users_from_token.side_effect = [stub_parse_results, side_effect]
+            scoped_users = oneroster_connector.get_scoped_users(scoped_sources, {})
+    assert scoped_users['18125']['groups'] == {'product2', 'product1'}
+    assert scoped_users['18317']['groups'] == {'product1'}
+    assert scoped_users['18888']['groups'] == {'product2'}
 
 
 @pytest.fixture()
