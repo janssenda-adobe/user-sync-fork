@@ -12,12 +12,11 @@ class SignConnector(PostSyncConnector):
     def __init__(self, config_options, test_mode=False):
         super().__init__()
         self.logger = logging.getLogger(self.name)
+        self.test_mode = test_mode
         sync_config = DictConfig('<%s configuration>' % self.name, config_options)
-        self.user_groups = sync_config.get_list('user_groups', True)
-        if self.user_groups is None:
-            self.user_groups = []
-        self.user_groups = self._groupify(self.user_groups)
+        self.user_groups = self._groupify(sync_config.get_list('user_groups', True) or [])
         self.entitlement_groups = self._groupify(sync_config.get_list('entitlement_groups'))
+
         self.identity_types = sync_config.get_list('identity_types', True)
         if self.identity_types is None:
             self.identity_types = ['adobeID', 'enterpriseID', 'federatedID']
@@ -25,12 +24,11 @@ class SignConnector(PostSyncConnector):
         # dict w/ structure - umapi_name -> adobe_group -> [set of roles]
         self.admin_roles = self._admin_role_mapping(sync_config)
 
-        sign_orgs = sync_config.get_list('sign_orgs')
         self.clients = {}
-        for sign_org_config in sign_orgs:
+        for sign_org_config in sync_config.get_list('sign_orgs'):
             sign_client = SignClient(sign_org_config)
             self.clients[sign_client.console_org] = sign_client
-        self.test_mode = test_mode
+
 
     def run(self, post_sync_data):
         """
