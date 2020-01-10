@@ -49,22 +49,14 @@ class SignConnector(PostSyncConnector):
             self.update_sign_users(umapi_users, sign_client, org_name)
 
     def update_sign_users(self, umapi_users, sign_client, org_name):
-        self.logger.info("Retrieving sign users")
         sign_users = sign_client.get_users()
-        for _, umapi_user in umapi_users.items():
+        for umapi_user in umapi_users.values():
             sign_user = sign_users.get(umapi_user['email'])
             if not self.should_sync(umapi_user, sign_user, org_name):
                 continue
 
-            assignment_group = None
-
-            for group in self.user_groups[org_name]:
-                if group in umapi_user['groups']:
-                    assignment_group = group
-                    break
-
-            if assignment_group is None:
-                assignment_group = sign_client.DEFAULT_GROUP_NAME
+            assignment_group = self.common_group(
+                self.user_groups[org_name], umapi_user['groups'], sign_client.DEFAULT_GROUP_NAME)
 
             group_id = sign_client.groups.get(assignment_group)
             admin_roles = self.admin_roles.get(org_name, {})
@@ -85,6 +77,10 @@ class SignConnector(PostSyncConnector):
                     umapi_user['email'], assignment_group, update_data['roles']))
             except AssertionError as e:
                 self.logger.error("Error updating user {}".format(e))
+
+    @staticmethod
+    def common_group(sign_groups, user_groups, default_group):
+        return next((g for g in sign_groups if g in user_groups), default_group)
 
     @staticmethod
     def roles_match(resolved_roles, sign_roles):
