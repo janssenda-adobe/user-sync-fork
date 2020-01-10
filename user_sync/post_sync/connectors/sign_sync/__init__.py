@@ -49,6 +49,7 @@ class SignConnector(PostSyncConnector):
             self.update_sign_users(umapi_users, sign_client, org_name)
 
     def update_sign_users(self, umapi_users, sign_client, org_name):
+        self.logger.info("Retrieving sign users")
         sign_users = sign_client.get_users()
         for _, umapi_user in umapi_users.items():
             sign_user = sign_users.get(umapi_user['email'])
