@@ -75,7 +75,7 @@ Finally, output defined in the configuration file is compared in the same manner
 
 To run the entire test set, navigate to the test_framework/dist folder and enter the following command:
 
-`./user-sync-test -c ../tests/test-set-config.yml`
+`./user-sync-test -c ../tests/test-suite-config.yml`
 
 To run a group of tests, specify it using the -g argument:
 

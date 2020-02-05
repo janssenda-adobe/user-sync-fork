@@ -26,6 +26,9 @@ version_namespace = {}
 with open('user_sync/version.py') as f:
     exec(f.read(), version_namespace)
 
+test_deps = ['mock', 'pytest', 'pytest-cov']
+setup_deps = ['pytest-runner', 'nose>=1.0']
+
 setup(name='user-sync',
       version=version_namespace['__version__'],
       description='Application for synchronizing customer directories with the Adobe Enterprise Admin Console',
@@ -61,13 +64,12 @@ setup(name='user-sync',
           ],
           ':sys_platform=="win32"':[
               'pywin32-ctypes'
-          ]
+          ],
+          'test': test_deps,
+          'setup': setup_deps,
       },
-      setup_requires=['nose>=1.0'],
-      tests_require=[
-          'mock',
-          'nose>=1.0',
-      ],
+      setup_requires=setup_deps,
+      tests_require=test_deps,
       entry_points={
           'console_scripts': [
               'user_sync = user_sync.app:main'

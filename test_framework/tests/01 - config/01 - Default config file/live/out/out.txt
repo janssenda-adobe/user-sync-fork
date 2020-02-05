@@ -1,22 +1,11 @@
-2017-06-12 17:07:52 77379 INFO config - Using main config file: [[../../../config-common/user-sync-config.yml]]
-2017-06-12 17:07:52 77379 INFO main - ========== Start Run (User Sync version: 2.1) ==============
-2017-06-12 17:07:52 77379 INFO main - ------- Invocation parameters -------
-2017-06-12 17:07:52 77379 INFO main - [[/Users/imak/github-adobe/user-sync.py/dist/user-sync --test-framework live -c ../../../config-common/user-sync-config.yml --update-user-info --users file ../../../config-common/users.csv]]
-2017-06-12 17:07:52 77379 INFO main - -------------------------------------
-2017-06-12 17:07:53 77379 INFO processor - ---------- Start Load from Directory -----------------------
-2017-06-12 17:07:53 77379 WARNING csv - In file '[[../../../config-common/users.csv]]': unrecognized column names: ['bc', 'subco']
-2017-06-12 17:07:53 77379 INFO processor - ---------- End Load from Directory (Total time: 0:00:00) ---
-2017-06-12 17:07:53 77379 INFO processor - ---------- Start Sync Umapi --------------------------------
-2017-06-12 17:07:54 77379 INFO processor - Updating info for user key: enterpriseID,cce1@ensemble.ca, changes: {'email': u'cce1@ensemble.ca'}
-2017-06-12 17:07:55 77379 INFO processor - ---------- End Sync Umapi (Total time: 0:00:02) ------------
-2017-06-12 17:07:55 77379 INFO processor - ---------------------------------- Action Summary ----------------------------------
-2017-06-12 17:07:55 77379 INFO processor -                         Number of directory users read: 1
-2017-06-12 17:07:55 77379 INFO processor -           Number of directory users selected for input: 1
-2017-06-12 17:07:55 77379 INFO processor -                             Number of Adobe users read: 78
-2017-06-12 17:07:55 77379 INFO processor -            Number of Adobe users excluded from updates: 43
-2017-06-12 17:07:55 77379 INFO processor -     Number of non-excluded Adobe users with no changes: 34
-2017-06-12 17:07:55 77379 INFO processor -                        Number of new Adobe users added: 0
-2017-06-12 17:07:55 77379 INFO processor -                 Number of matching Adobe users updated: 1
-2017-06-12 17:07:55 77379 INFO processor -   Number of UMAPI actions sent (total, success, error): (1, 1, 0)
-2017-06-12 17:07:55 77379 INFO processor - ------------------------------------------------------------------------------------
-2017-06-12 17:07:55 77379 INFO main - ========== End Run (User Sync version: 2.1) (Total time: 0:00:02) 
+Traceback (most recent call last):
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\pex.py", line 347, in execute
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\pex.py", line 90, in _activate
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\environment.py", line 163, in activate
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\environment.py", line 217, in _activate
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\environment.py", line 152, in update_candidate_distributions
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\environment.py", line 122, in load_internal_cache
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\environment.py", line 109, in write_zipped_internal_cache
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\util.py", line 178, in cache_distribution
+  File "D:\Repositories\adobe\user-sync-fork\dist\user-sync.pex\.bootstrap\_pex\common.py", line 141, in safe_open
+IOError: [Errno 2] No such file or directory: u'C:\\Users\\danimae.vossen\\.pex\\install\\pycryptodome-3.7.3-cp36-cp36m-win_amd64.whl.145f2de6f50a0f81798db664ba5586f1b1709d42.0d83d3f2328b4432bb0343bfac620753\\pycryptodome-3.7.3-cp36-cp36m-win_amd64.whl\\Crypto/SelfTest/Cipher/__pycache__/test_Blowfish.cpython-36.pyc'
