@@ -18,25 +18,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import argparse
 import logging
 import os
-import sys
-import click
+import platform
 import shutil
-from click_default_group import DefaultGroup
+import sys
 from datetime import datetime
 
+import click
 import six
+from click_default_group import DefaultGroup
 
+import user_sync.cli
 import user_sync.config
 import user_sync.connector.directory
 import user_sync.connector.umapi
 import user_sync.helper
 import user_sync.lockfile
-import user_sync.rules
-import user_sync.cli
 import user_sync.resource
+import user_sync.rules
 from user_sync.error import AssertionException
 from user_sync.version import __version__ as app_version
 
@@ -287,7 +287,8 @@ def log_parameters(argv, config_loader):
     :type config_loader: user_sync.config.ConfigLoader
     :return: None
     """
-    logger.info('Python version: %s.%s.%s on %s' % (sys.version_info[:3] + (sys.platform,)))
+    logger.info('User Sync {0} - Python {1} - {2} {3}'
+                .format(app_version, platform.python_version(), platform.system(), platform.version()))
     logger.info('------- Command line arguments -------')
     logger.info(' '.join(argv))
     logger.debug('-------- Resulting invocation options --------')
