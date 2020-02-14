@@ -515,6 +515,9 @@ class ConfigLoader(object):
                 exclude_groups.append(group.get_group_name())
             options['exclude_groups'] = exclude_groups
 
+        stats = self.get_logging_config().get_bool('log_stats', True)
+        options['log_stats'] = True if stats is None else stats
+
         # get the limits
         limits_config = self.main_config.get_dict_config('limits')
         max_missing = limits_config.get_value('max_adobe_only_users',(int, str),False)
