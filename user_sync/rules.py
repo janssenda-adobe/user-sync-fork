@@ -504,10 +504,12 @@ class RuleProcessor(object):
                 secondary_adds_by_user_key = umapi_info.get_desired_groups_by_user_key()
             else:
                 secondary_adds_by_user_key = self.update_umapi_users_for_connector(umapi_info, umapi_connector)
+            total_users = len(secondary_adds_by_user_key)
             for user_key, groups_to_add in six.iteritems(secondary_adds_by_user_key):
                 # We only create users who have group mappings in the secondary umapi
                 if groups_to_add:
-                    self.logger.info('Adding user to umapi %s with user key: %s', umapi_name, user_key)
+                    self.logger.info(statkey.format(user_count, total_users) +
+                                     'Adding user to umapi %s with user key: %s', umapi_name, user_key)
                     self.secondary_users_created.add(user_key)
                     if user_key not in self.primary_users_created:
                         # We pushed an existing user to a secondary in order to update his groups
