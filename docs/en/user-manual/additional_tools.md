@@ -79,5 +79,22 @@ Private key encryption allows a user to encrypt a private key file with a passph
 | `-p`<br />`--password` | Password will be prompted if not passed as a parameter. This will be used as the passphrase for the RSA encryption of the private key file.  |
 
 
+## Sending email logs after sync
+
+| Parameters&nbsp;and&nbsp;argument&nbsp;specifications | Description |
+|------------------------------|------------------|
+| `email_address` _filename_ | Sets the email address for recieveing error alerts |
+
+
+<br/>
+This feature will allow the sync to send an email if there was a sync error.
+
+Other description ......
+
+
+
+
+
+
 
 [Previous Section](deployment_best_practices.md)
