@@ -21,6 +21,7 @@
 import json
 import logging
 # import helper
+import math
 
 import jwt
 import six
@@ -105,17 +106,29 @@ class UmapiConnector(object):
         # wrap the connection in an action manager
         self.action_manager = ActionManager(connection, org_id, logger)
 
+    # def get_user_count(self, in_group=None):
+    #     try:
+    #         u_query = umapi_client.UsersQuery(self.connection, in_group=in_group)
+    #         return u_query.get_total_count()
+    #     except umapi_client.UnavailableError as e:
+    #         raise AssertionException("Error contacting UMAPI server: %s" % e)
+
     def get_users(self):
         return list(self.iter_users())
 
     def iter_users(self, in_group=None):
         users = {}
         try:
-            if in_group:
-                u_query = umapi_client.UsersQuery(self.connection, in_group=in_group)
-            else:
-                u_query = umapi_client.UsersQuery(self.connection)
-            for u in u_query:
+            u_query = umapi_client.UsersQuery(self.connection, in_group=in_group)
+            page = 0
+            for i, u in enumerate(u_query):
+
+                if (u_query._next_page_index != page):
+                    page += 1
+                    total = math.ceil(u_query._total_count/400)
+                    self.logger.info(str(page) + " of " + str(total))
+
+
                 email = u['email']
                 if not (email in users):
                     users[email] = u
