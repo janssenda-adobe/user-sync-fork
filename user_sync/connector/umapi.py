@@ -120,19 +120,23 @@ class UmapiConnector(object):
         users = {}
         try:
             u_query = umapi_client.UsersQuery(self.connection, in_group=in_group)
-            page = 0
             for i, u in enumerate(u_query):
-
-                if (u_query._next_page_index != page):
-                    page += 1
-                    total = math.ceil(u_query._total_count/400)
-                    self.logger.info(str(page) + " of " + str(total))
-
-
                 email = u['email']
                 if not (email in users):
                     users[email] = u
                     yield u
+
+                if (True or (i + 1) % u_query._page_size == 0):
+                    self.logger.info("{0}/{1} ({2}%))"
+                                     .format(len(users),u_query._total_count, len(users)/u_query._total_count*100))
+
+
+            # self.logger.info("Page {0} of {1} ({2}/{3})"
+            #                  .format(u_query._next_page_index - 1,
+            #                          u_query._page_count,
+            #                          len(users),
+            #                          u_query._total_count))
+
         except umapi_client.UnavailableError as e:
             raise AssertionException("Error contacting UMAPI server: %s" % e)
 
