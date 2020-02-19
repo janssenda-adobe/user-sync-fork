@@ -116,6 +116,9 @@ class UmapiConnector(object):
     def get_users(self):
         return list(self.iter_users())
 
+    def log_actions(self, count, total):
+        self.logger.info("{0}/{1} ({2}%))".format(count, total, 100*count/total))
+
     def iter_users(self, in_group=None):
         users = {}
         try:
@@ -126,9 +129,13 @@ class UmapiConnector(object):
                     users[email] = u
                     yield u
 
-                if (True or (i + 1) % u_query._page_size == 0):
-                    self.logger.info("{0}/{1} ({2}%))"
-                                     .format(len(users),u_query._total_count, len(users)/u_query._total_count*100))
+
+                self.log_actions(len(users), u_query._total_count)
+
+
+                # if (True or (i + 1) % u_query._page_size == 0):
+                #     self.logger.info("{0}/{1} ({2}%))"
+                #                      .format(len(users),u_query._total_count, len(users)/u_query._total_count*100))
 
 
             # self.logger.info("Page {0} of {1} ({2}/{3})"
@@ -140,6 +147,7 @@ class UmapiConnector(object):
         except umapi_client.UnavailableError as e:
             raise AssertionException("Error contacting UMAPI server: %s" % e)
 
+        print()
     def get_groups(self):
         return list(self.iter_groups())
 
