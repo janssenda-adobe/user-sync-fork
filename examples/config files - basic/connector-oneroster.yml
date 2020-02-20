@@ -55,6 +55,7 @@ mapping:
   scoped_sources:
     - type: file
       path: 'sources.csv'
+      user_filter: 'teachers'
     - type: yaml
       access_token: 'TEST_TOKEN'
       product: 'adobe-spark'
