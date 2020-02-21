@@ -29,7 +29,7 @@ import umapi_client
 
 import user_sync.connector.helper
 import user_sync.config
-import user_sync.helper
+#import user_sync.helper
 import user_sync.identity_type
 from user_sync.error import AssertionException
 from user_sync.version import __version__ as app_version
@@ -106,18 +106,8 @@ class UmapiConnector(object):
         # wrap the connection in an action manager
         self.action_manager = ActionManager(connection, org_id, logger)
 
-    # def get_user_count(self, in_group=None):
-    #     try:
-    #         u_query = umapi_client.UsersQuery(self.connection, in_group=in_group)
-    #         return u_query.get_total_count()
-    #     except umapi_client.UnavailableError as e:
-    #         raise AssertionException("Error contacting UMAPI server: %s" % e)
-
     def get_users(self):
         return list(self.iter_users())
-
-    def log_actions(self, count, total):
-        self.logger.info("{0}/{1} ({2}%))".format(count, total, 100*count/total))
 
     def iter_users(self, in_group=None):
         users = {}
@@ -129,25 +119,13 @@ class UmapiConnector(object):
                     users[email] = u
                     yield u
 
-
-                self.log_actions(len(users), u_query._total_count)
-
-
-                # if (True or (i + 1) % u_query._page_size == 0):
-                #     self.logger.info("{0}/{1} ({2}%))"
-                #                      .format(len(users),u_query._total_count, len(users)/u_query._total_count*100))
-
-
-            # self.logger.info("Page {0} of {1} ({2}/{3})"
-            #                  .format(u_query._next_page_index - 1,
-            #                          u_query._page_count,
-            #                          len(users),
-            #                          u_query._total_count))
+                if ((i + 1) % u_query._page_size == 0):
+                    self.logger.progress(len(users), u_query._total_count)
+            self.logger.progress(u_query._total_count, u_query._total_count)
 
         except umapi_client.UnavailableError as e:
             raise AssertionException("Error contacting UMAPI server: %s" % e)
 
-        print()
     def get_groups(self):
         return list(self.iter_groups())
 
