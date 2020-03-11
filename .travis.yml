@@ -63,7 +63,7 @@ matrix:
     install:
     - $SH .build/.travis/install-centos.sh
     script:
-    - $SH .travis/build-py36-centos.sh
+    - $SH .build/.travis/build-py36-centos.sh
   - env:
     - OS="centos:7"
     - IMG="centos7"
