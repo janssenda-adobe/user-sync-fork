@@ -40,6 +40,8 @@ import user_sync.resource
 from user_sync.error import AssertionException
 from user_sync.version import __version__ as app_version
 
+#test
+
 LOG_STRING_FORMAT = '%(asctime)s %(process)d %(levelname)s %(name)s - %(message)s'
 LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
