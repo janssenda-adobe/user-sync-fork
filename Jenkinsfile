@@ -2,6 +2,7 @@ pipeline {
 	agent any
 	environment {
 		a_variable = 'the variable'
+		python = 'C:\\Program Files\\Python36'
 	}
 	stages {
 		stage('Configure') {
