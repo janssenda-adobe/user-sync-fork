@@ -2,8 +2,7 @@ pipeline {
 	agent any
 	environment {
 		a_variable = 'the variable'
-		BUILD_TARGET = 'abc'
-		python = 'C:\\Program Files\\Python36'
+		BUILD_TARGET = 'standalone'
 	}
 	stages {
 		stage('Configure') {
