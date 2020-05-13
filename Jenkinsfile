@@ -3,7 +3,7 @@ pipeline {
 	environment {
 		BUILD_TARGET = "standalone"
 		PYTHON_HOME = "C:\\Program Files\\Python36"
-		BUILD_EDITON = "full"
+		BUILD_EDITION = "full"
 	}
 	stages {
 		stage('Configure') {

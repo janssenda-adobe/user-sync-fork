@@ -1,7 +1,7 @@
 
 Write-Host "Dir: ${PWD}"
 Write-Host "Version: ${env:VERSION}"
-Write-Host "Edition: ${env:BUILD EDITION}"
+Write-Host "Edition: ${env:BUILD_EDITION}"
 
 $venvcmd = "${env:PYTHON_HOME}\Scripts\virtualenv.exe"
 & $venvcmd venv
