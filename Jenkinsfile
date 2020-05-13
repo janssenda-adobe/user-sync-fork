@@ -3,23 +3,27 @@ pipeline {
 	environment {
 		a_variable = 'the variable'
 		BUILD_TARGET = 'standalone'
+		PYTHON_HOME = "C:\\Program Files\\Python36"
+
 	}
 	stages {
 		stage('Configure') {
 			steps {
 				script{
-					echo "${a_variable}"
+					dir("user_sync") {
+				        env.VERSION = sh returnStdout: true, script: "python -c 'import version; print(version.__version__)'"
+					    echo "Building version: ${env.VERSION}"
+					}
 				}
 			}
 		}
 		stage('Build') {
 			steps {
 				script{
+				    echo "xx ${env.VERSION}"
+
 				    powershell ".build\\.appveyor\\build_test.ps1"
-			//		dir("user_sync") {
-				//		sh 'echo hello'
-					//	sh 'ls'
-					//}
+
 					//dir("windows"){
 						//archiveArtifacts artifacts: "$msi_file", fingerprint: true
 						//archiveArtifacts artifacts: "$cert_file", fingerprint: true

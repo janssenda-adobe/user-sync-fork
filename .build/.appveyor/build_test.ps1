@@ -1,6 +1,8 @@
 
 Write-Host "Dir: ${PWD}"
-$venvcmd = "C:\Program Files\Python36\Scripts\virtualenv.exe"
+Write-Host "Version ${env:VERSION}"
+exit
+$venvcmd = "${env:python}\Scripts\virtualenv.exe"
 & $venvcmd venv
 .\venv\Scripts\activate.ps1
 $venv = & which python
@@ -18,9 +20,9 @@ mkdir release
 
 cp dist\user-sync.exe release\
 cd release
-7z a "user-sync-TEST-win64.zip" user-sync.exe
+7z.exe a "user-sync-TEST-win64.zip" user-sync.exe
 cd ..
-7z a -ttar -r release\examples.tar examples
-7z a -tgzip release\examples.tar.gz release\examples.tar
-7z a -r release\examples.zip examples\
+7z.exe a -ttar -r release\examples.tar examples
+7z.exe a -tgzip release\examples.tar.gz release\examples.tar
+7z.exe a -r release\examples.zip examples\
 dir release
