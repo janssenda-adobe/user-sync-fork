@@ -1,9 +1,7 @@
 pipeline {
-	agent {
-		label 'test_win'
-	}
+	agent any
 	environment {
-		a_variable = 'the variable1'
+		a_variable = 'the variable'
 	}
 	stages {
 		stage('Configure') {
@@ -17,10 +15,10 @@ pipeline {
 			steps {
 				script{
 				    powershell ".build\\.appveyor\\build_test.ps1"
-//					dir("user_sync") {
-//						sh 'echo hello'
-//						sh 'ls'
-					}
+			//		dir("user_sync") {
+				//		sh 'echo hello'
+					//	sh 'ls'
+					//}
 					//dir("windows"){
 						//archiveArtifacts artifacts: "$msi_file", fingerprint: true
 						//archiveArtifacts artifacts: "$cert_file", fingerprint: true
@@ -37,13 +35,6 @@ pipeline {
 	//	}
 	}
 
-	post {
-		always {
-			node(null){
-				deleteDir()
-			}
-		}
-
-	}
+	post { always { deleteDir()}}
 }
 
