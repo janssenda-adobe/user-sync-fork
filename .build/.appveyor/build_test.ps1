@@ -1,7 +1,8 @@
 
 Write-Host "Dir: ${PWD}"
-Write-Host "Version ${env:VERSION}"
-exit
+Write-Host "Version: ${env:VERSION}"
+Write-Host "Edition: ${env:EDITION}"
+
 $venvcmd = "${env:python}\Scripts\virtualenv.exe"
 & $venvcmd venv
 .\venv\Scripts\activate.ps1
@@ -20,7 +21,7 @@ mkdir release
 
 cp dist\user-sync.exe release\
 cd release
-7z.exe a "user-sync-TEST-win64.zip" user-sync.exe
+7z.exe a "user-sync-${env:VERSION}${env:BUILD_EDITION}-win64.zip" user-sync.exe
 cd ..
 7z.exe a -ttar -r release\examples.tar examples
 7z.exe a -tgzip release\examples.tar.gz release\examples.tar
