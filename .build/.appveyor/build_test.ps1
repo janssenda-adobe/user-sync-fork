@@ -1,9 +1,9 @@
 
 Write-Host "Dir: ${PWD}"
 Write-Host "Version: ${env:VERSION}"
-Write-Host "Edition: ${env:EDITION}"
+Write-Host "Edition: ${env:BUILD EDITION}"
 
-$venvcmd = "${env:python}\Scripts\virtualenv.exe"
+$venvcmd = "${env:PYTHON_HOME}\Scripts\virtualenv.exe"
 & $venvcmd venv
 .\venv\Scripts\activate.ps1
 $venv = & which python
