@@ -1,1 +1,1 @@
-Write-Host "Hello Powershell"
+Write-Host "Hello ${env:python}\python.exe"
