@@ -11,6 +11,7 @@ pipeline {
 				script{
 					dir("user_sync") {
 				        env.VERSION = sh returnStdout: true, script: "python -c 'import version; print(version.__version__)'"
+				        env.VERSION = env.VERSION.trim()
 					    echo "Building version: ${env.VERSION}"
 					}
 				}
