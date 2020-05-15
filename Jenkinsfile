@@ -29,8 +29,8 @@ pipeline {
 		stage('Standard') {
 			steps {
 				script{
-                    env.UST_EXTENSION: "1"
-                    env.BUILD_EDITION: "standard"
+                    env.UST_EXTENSION = "1"
+                    env.BUILD_EDITION = "standard"
 				    powershell ".build\\.appveyor\\build_test.ps1" build
 
 				}
