@@ -77,10 +77,10 @@ class SignClient:
 
         result = requests.get(url + url_path, headers=self.header())
         if result.status_code != 200:
-            raise AssertionException("Error getting base URI from Sign API, is API key valid?")
+            raise AssertionException("Error getting base URI from Sign API, is API key valid? " + str(result.content))
 
         if access_point_key not in result.json():
-            raise AssertionException("Error getting base URI for Sign API, result invalid")
+            raise AssertionException("Error getting base URI for Sign API, result invalid: " + str(result.content))
 
         return result.json()[access_point_key] + endpoint
 
@@ -101,9 +101,9 @@ class SignClient:
         for user_id in map(lambda u: u['userId'], users_res.json()['userInfoList']):
             user_res = requests.get(self.api_url + 'users/' + user_id, headers=self.header())
             if users_res.status_code != 200:
-                raise AssertionException("Error retrieving details for Sign user '{}'".format(user_id))
+                raise AssertionException("Error retrieving details for Sign user '{}': {}".format(user_id, user_res.content))
             user = user_res.json()
-            if user['userStatus'] != 'ACTIVE':
+            if 'userStatus' in user and user['userStatus'] != 'ACTIVE':
                 continue
             if user['email'] == self.admin_email:
                 continue
@@ -124,7 +124,7 @@ class SignClient:
 
         res = requests.get(self.api_url + 'groups', headers=self.header())
         if res.status_code != 200:
-            raise AssertionException("Error retrieving Sign group list")
+            raise AssertionException("Error retrieving Sign group list " + str(res.content))
         groups = {}
         sign_groups = res.json()
         for group in sign_groups['groupInfoList']:
@@ -141,7 +141,7 @@ class SignClient:
             self._init()
         res = requests.post(self.api_url + 'groups', headers=self.header_json(), data=json.dumps({'groupName': group}))
         if res.status_code != 201:
-            raise AssertionException("Failed to create Sign group '{}' (reason: {})".format(group, res.reason))
+            raise AssertionException("Failed to create Sign group '{}' (reason: {})".format(group, res.content))
         self.groups[group] = res.json()['groupId']
 
     def update_user(self, user_id, data):
@@ -156,7 +156,7 @@ class SignClient:
 
         res = requests.put(self.api_url + 'users/' + user_id, headers=self.header_json(), data=json.dumps(data))
         if res.status_code != 200:
-            raise AssertionException("Failed to update user '{}' (reason: {})".format(user_id, res.reason))
+            raise AssertionException("Failed to update user '{}' (reason: {})".format(user_id, res.content))
 
     @staticmethod
     def user_roles(user):
