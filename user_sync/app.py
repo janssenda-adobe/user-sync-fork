@@ -17,6 +17,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 from sys import platform
 import logging
 import os
@@ -185,7 +186,9 @@ def sync(**kwargs):
         lock = user_sync.lockfile.ProcessLock(lock_path)
         if lock.set_lock():
             try:
-                begin_work(config_loader)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    begin_work(config_loader)
             finally:
                 lock.unlock()
         else:
