@@ -98,7 +98,7 @@ class CredentialConfig:
     Each method (store, revert, fetch) should be written in a subclass of this class.  This will help keep
     it all organized since filenames and config is stored within.  Shared methods are get_key, load and save.
     """
-    secured_keys = []
+    secured_fields = []
 
     def __init__(self, filename=None, auto=False):
         # filename will be the unique identifier for each file.  This can be an absolute path - but if so we cannot
@@ -106,6 +106,7 @@ class CredentialConfig:
         self.filename = filename
         self.auto = auto
         self.logger = logging.getLogger('credman')
+        self.secured_fields = ConfigLoader.as_list(self.secured_fields)
 
         # The dictionary including comments that will be updated and re-saved
         self.load()
@@ -117,7 +118,7 @@ class CredentialConfig:
 
     def modify_credentials(self, action):
         credentials = {}
-        for k in self.secured_keys:
+        for k in self.secured_fields:
             val = label = None
             try:
                 # Try to do the action, but don't break on exception because rest of actions
@@ -131,8 +132,9 @@ class CredentialConfig:
                     raise
 
                 # Do not encrypt data if already encrypted - passphrase in file will still be stored
+                name = k.key_path[-1]
                 if not encryption.is_encryptable(self.get_nested_key(k.key_path)):
-                    self.logger.info("Skipping '{}' - likely already encrypted".format(k.key_path[-1]))
+                    self.logger.info("Skipping '{}' - likely already encrypted".format(name))
                     continue
 
                 if self.auto or click.confirm(
@@ -206,17 +208,17 @@ class CredentialConfig:
     def encrypt_key(self, key):
         data = self.get_nested_key(key.key_path)
         passphrase = None
-        if key.has_linked():
+        if key.has_password():
             # If key has associated password, we should use this instead of prompting
-            passphrase = self.retrieve_key(key.linked_key) or self.get_nested_key(key.linked_key.key_path)
+            passphrase = self.retrieve_key(key.password_field) or self.get_nested_key(key.password_field.key_path)
         if passphrase is None:
             passphrase = self.get_passphrase()
 
         enc_data = encryption.encrypt(passphrase, data)
         self.set_nested_key(key.key_path, pss(enc_data))
-        if key.has_linked():
-            self.store_key(key.linked_key, value=passphrase)
-            return passphrase, key.linked_key.key_path
+        if key.has_password():
+            self.store_key(key.password_field, value=passphrase)
+            return passphrase, key.password_field.key_path
         return passphrase, key.key_path
 
     def retrieve_key(self, key):
@@ -284,32 +286,33 @@ class CredentialConfig:
         return d
 
 
-class Key:
-    def __init__(self, key_path, is_block=False, linked_key=None):
+class Field:
+    def __init__(self, key_path, is_block=False, password_field=None):
         self.key_path = key_path
         self.is_block = is_block
-        self.linked_key = linked_key
+        self.password_field = password_field
 
-    def has_linked(self):
-        return not self.linked_key is None
+    def has_password(self):
+        return not self.password_field is None
+
 
 class LdapCredentialConfig(CredentialConfig):
-    secured_keys = [Key(key_path=['password'])]
+    secured_fields = Field(['password'])
 
 
 class OktaCredentialConfig(CredentialConfig):
-    secured_keys = [Key(key_path=['api_token'])]
+    secured_fields = Field(['api_token'])
 
 
 class UmapiCredentialConfig(CredentialConfig):
-    pass_key = Key(key_path=['enterprise', 'priv_key_pass'])
-    secured_keys = [
-        Key(key_path=['enterprise', 'api_key']),
-        Key(key_path=['enterprise', 'client_secret']),
-        pass_key,
-        Key(key_path=['enterprise', 'priv_key_data'],
-            is_block=True,
-            linked_key=pass_key)
+    pass_field = Field(['enterprise', 'priv_key_pass'])
+    secured_fields = [
+        pass_field,
+        Field(['enterprise', 'api_key']),
+        Field(['enterprise', 'client_secret']),
+        Field(['enterprise', 'priv_key_data'],
+              is_block=True,
+              password_field=pass_field)
     ]
 
 
