@@ -37,7 +37,7 @@ import user_sync.connector.directory_ldap
 import user_sync.connector.directory_okta
 import user_sync.connector.directory_csv
 import user_sync.connector.directory_adobe_console
-import user_sync.connector.umapi
+import user_sync.connector.directory_oneroster
 import user_sync.connector.umapi
 import user_sync.encryption
 import user_sync.helper

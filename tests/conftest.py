@@ -1,4 +1,6 @@
+import logging
 import os
+from io import StringIO
 
 import pytest
 
@@ -59,6 +61,16 @@ def umapi_config_file(fixture_dir):
 @pytest.fixture
 def extension_config_file(fixture_dir):
     return os.path.join(fixture_dir, 'extension-config.yml')
+
+@pytest.fixture
+def log_stream():
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    logger = logging.getLogger('test_logger')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    yield stream, logger
+    handler.close()
 
 @pytest.fixture
 def tmp_config_files(root_config_file, ldap_config_file, umapi_config_file, tmpdir):
