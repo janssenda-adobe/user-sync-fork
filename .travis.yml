@@ -14,45 +14,45 @@ matrix:
     - ".build/.travis/build-py36.sh"
     - ".build/.travis/release.sh"
     - python setup.py test
-  - env: IMG="ubuntu1604" BUILD_TARGET="standalone" BUILD_EDITION="-noext" UST_EXTENSION=0
-    python:
-      - 3.6
-    install:
-      - ".build/.travis/install-ubuntu.sh"
-    script:
-      - ".build/.travis/build-py36.sh"
-      - ".build/.travis/release.sh"
-      - python setup.py test
-  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
-    services:
-    - docker
-    python:
-    - 3.6
-    before_install:
-    - chmod +x .build/.travis/*.sh
-    - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e
-      TRAVIS_TAG="${TRAVIS_TAG}" -e BUILD_TARGET="standalone" -e BUILD_EDITION=""
-      -e UST_EXTENSION=1 -e LC_ALL=en_US.utf8 ${OS} tail -f /dev/null
-    - docker ps
-    install:
-    - "$SH .build/.travis/install-centos.sh"
-    script:
-    - "$SH .build/.travis/build-py36-centos.sh"
-  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
-    services:
-      - docker
-    python:
-      - 3.6
-    before_install:
-      - chmod +x .build/.travis/*.sh
-      - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e
-        TRAVIS_TAG="${TRAVIS_TAG}" -e BUILD_TARGET="standalone" -e BUILD_EDITION="-noext"
-        -e UST_EXTENSION=0 -e LC_ALL=en_US.utf8 ${OS} tail -f /dev/null
-      - docker ps
-    install:
-      - "$SH .build/.travis/install-centos.sh"
-    script:
-      - "$SH .build/.travis/build-py36-centos.sh"
+#  - env: IMG="ubuntu1604" BUILD_TARGET="standalone" BUILD_EDITION="-noext" UST_EXTENSION=0
+#    python:
+#      - 3.6
+#    install:
+#      - ".build/.travis/install-ubuntu.sh"
+#    script:
+#      - ".build/.travis/build-py36.sh"
+#      - ".build/.travis/release.sh"
+#      - python setup.py test
+#  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
+#    services:
+#    - docker
+#    python:
+#    - 3.6
+#    before_install:
+#    - chmod +x .build/.travis/*.sh
+#    - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e
+#      TRAVIS_TAG="${TRAVIS_TAG}" -e BUILD_TARGET="standalone" -e BUILD_EDITION=""
+#      -e UST_EXTENSION=1 -e LC_ALL=en_US.utf8 ${OS} tail -f /dev/null
+#    - docker ps
+#    install:
+#    - "$SH .build/.travis/install-centos.sh"
+#    script:
+#    - "$SH .build/.travis/build-py36-centos.sh"
+#  - env: OS="centos:7" IMG="centos7" SH="docker exec -t ${IMG} bash -c"
+#    services:
+#      - docker
+#    python:
+#      - 3.6
+#    before_install:
+#      - chmod +x .build/.travis/*.sh
+#      - docker run -d --name ${IMG} -v $(pwd):/travis -w /travis -e IMG="${IMG}" -e
+#        TRAVIS_TAG="${TRAVIS_TAG}" -e BUILD_TARGET="standalone" -e BUILD_EDITION="-noext"
+#        -e UST_EXTENSION=0 -e LC_ALL=en_US.utf8 ${OS} tail -f /dev/null
+#      - docker ps
+#    install:
+#      - "$SH .build/.travis/install-centos.sh"
+#    script:
+#      - "$SH .build/.travis/build-py36-centos.sh"
 
 deploy:
   provider: releases
