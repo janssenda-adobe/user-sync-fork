@@ -59,9 +59,6 @@ def _init_config():
                 _config[k] = bool(int(v))
         else:
             _config[k] = bool(int(flag_data[k]))
-    
-    print("Flags")
-    print(str(_config))
 
 
 def get_flag(key):
