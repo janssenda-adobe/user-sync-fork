@@ -61,14 +61,9 @@ def bundle_feature_flag_config():
         flag_cfg['config'] = flag_data
         flag_cfg.write(flag_cfg_file)
 
-        
-    print("Flags")
-    print(str(flag_data))
-
 
 if __name__ == '__main__':
     cd()
-    print("banana")
     bundle_feature_flag_config()
     bundle_example_config('config files - basic')
     bundle_example_config('sign')
