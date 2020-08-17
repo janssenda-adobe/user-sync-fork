@@ -11,4 +11,6 @@ pip install -e .[test]
 pip install -e .[setup]
 pip uninstall -y enum34
 
+Write-Host 'Extension ${UST_EXTENSION}'
+
 make $env:BUILD_TARGET 2>&1
