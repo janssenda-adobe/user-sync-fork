@@ -40,7 +40,7 @@ def bundle_example_config(subdir):
 
 
 def bundle_feature_flag_config():
-     print("banana 2")
+    print("banana 2")
     default_cfg_path = os.path.join('user_sync', 'resources', 'default_flags.cfg')
     default_cfg = configparser.ConfigParser()
     default_cfg.optionxform = str
@@ -69,5 +69,6 @@ def bundle_feature_flag_config():
 if __name__ == '__main__':
     cd()
     print("banana")
+    bundle_feature_flag_config()
     bundle_example_config('config files - basic')
     bundle_example_config('sign')
