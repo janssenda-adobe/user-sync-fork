@@ -54,9 +54,15 @@ class SignConnector(PostSyncConnector):
 
     def update_sign_users(self, umapi_users, sign_client, org_name):
         sign_users = sign_client.get_users()
+        self.logger.debug('s-users:')
+        for s in sign_users:
+            self.logger.debug(str(s))
+        self.logger.info("Total sign users: " + str(len(sign_users)))
+        self.logger.info("Total umapi users: " + str(len(umapi_users)))
         for _, umapi_user in umapi_users.items():
-            sign_user = sign_users.get(umapi_user['email'])
+            sign_user = sign_users.get(umapi_user['email'].lower())
             if not self.should_sync(umapi_user, sign_user, org_name):
+                self.logger.debug("skipped\n")
                 continue
 
             assignment_group = None
@@ -69,6 +75,8 @@ class SignConnector(PostSyncConnector):
             if assignment_group is None:
                 assignment_group = sign_client.DEFAULT_GROUP_NAME
 
+            self.logger.debug("assigned: " + str(assignment_group))
+            self.logger.debug("")
             group_id = sign_client.groups.get(assignment_group)
             admin_roles = self.admin_roles.get(org_name, {})
             user_roles = self.resolve_new_roles(umapi_user, admin_roles)
@@ -116,6 +124,13 @@ class SignConnector(PostSyncConnector):
         :param org_name:
         :return:
         """
+        g = set(umapi_user['groups']) & set(self.entitlement_groups[org_name])
+        self.logger.debug('email:' + str(umapi_user['email']))
+        self.logger.debug('not none: ' +  str(sign_user is not None))
+        self.logger.debug('groups: ' +  str(umapi_user['groups']))
+        self.logger.debug('sgroups: ' +  str(self.entitlement_groups[org_name]))
+        self.logger.debug('gs: ' +  str(g))
+        self.logger.debug('type: ' + str(umapi_user['type']))
         return sign_user is not None and set(umapi_user['groups']) & set(self.entitlement_groups[org_name]) and \
             umapi_user['type'] in self.identity_types
 

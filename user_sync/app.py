@@ -17,7 +17,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import warnings
+from sys import platform
 import logging
 import os
 import shutil
@@ -198,7 +199,9 @@ def sync(**kwargs):
         lock = user_sync.lockfile.ProcessLock(lock_path)
         if lock.set_lock():
             try:
-                begin_work(config_loader)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    begin_work(config_loader)
             finally:
                 lock.unlock()
         else:
@@ -409,7 +412,7 @@ def begin_work(config_loader):
     post_sync_manager = None
     # get post-sync config unconditionally so we don't get an 'unused key' error
     post_sync_config = config_loader.get_post_sync_options()
-    if rule_config['strategy'] == 'sync':
+    if rule_config['strategy'] == 'sync' and directory_connector_module_name is not None:
         if post_sync_config:
             post_sync_manager = PostSyncManager(post_sync_config, rule_config['test_mode'])
             rule_config['extended_attributes'] |= post_sync_manager.get_directory_attributes()

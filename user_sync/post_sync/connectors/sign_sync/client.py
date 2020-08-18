@@ -17,9 +17,15 @@ class SignClient:
         self.key = config['key']
         self.admin_email = config['admin_email']
         self.console_org = config['console_org'] if 'console_org' in config else None
+        self.ssl_verify = config.get('ssl_verify')
         self.api_url = None
         self.groups = None
         self.logger = logging.getLogger(self.logger_name())
+
+        if self.ssl_verify is not False:
+            self.ssl_verify = True
+
+        print()
 
     def _init(self):
         self.api_url = self.base_uri()
@@ -75,12 +81,12 @@ class SignClient:
             url_path = 'base_uris'
             access_point_key = 'api_access_point'
 
-        result = requests.get(url + url_path, headers=self.header())
+        result = requests.get(url + url_path, headers=self.header(), verify=self.ssl_verify)
         if result.status_code != 200:
-            raise AssertionException("Error getting base URI from Sign API, is API key valid?")
+            raise AssertionException("Error getting base URI from Sign API, is API key valid? " + str(result.content))
 
         if access_point_key not in result.json():
-            raise AssertionException("Error getting base URI for Sign API, result invalid")
+            raise AssertionException("Error getting base URI for Sign API, result invalid: " + str(result.content))
 
         return result.json()[access_point_key] + endpoint
 
@@ -94,21 +100,26 @@ class SignClient:
 
         users = {}
         self.logger.debug('getting list of all Sign users')
-        users_res = requests.get(self.api_url + 'users', headers=self.header())
+        users_res = requests.get(self.api_url + 'users', headers=self.header(), verify=self.ssl_verify)
 
         if users_res.status_code != 200:
             raise AssertionException("Error retrieving Sign user list")
         for user_id in map(lambda u: u['userId'], users_res.json()['userInfoList']):
-            user_res = requests.get(self.api_url + 'users/' + user_id, headers=self.header())
+            user_res = requests.get(self.api_url + 'users/' + user_id, headers=self.header(), verify=self.ssl_verify)
             if users_res.status_code != 200:
-                raise AssertionException("Error retrieving details for Sign user '{}'".format(user_id))
+                raise AssertionException("Error retrieving details for Sign user '{}': {}".format(user_id, user_res.content))
             user = user_res.json()
-            if user['userStatus'] != 'ACTIVE':
-                continue
+            if 'userStatus' in user:
+                if  user['userStatus'] != 'ACTIVE':
+                    continue
+            else:
+                self.logger.debug("No status for user: ")
+                self.logger.debug(str(user))
             if user['email'] == self.admin_email:
                 continue
             user['userId'] = user_id
             user['roles'] = self.user_roles(user)
+            user['email'] = user['email'].lower()
             users[user['email']] = user
             self.logger.debug('retrieved user details for Sign user {}'.format(user['email']))
 
@@ -122,9 +133,9 @@ class SignClient:
         if self.api_url is None:
             self.api_url = self.base_uri()
 
-        res = requests.get(self.api_url + 'groups', headers=self.header())
+        res = requests.get(self.api_url + 'groups', headers=self.header(), verify=self.ssl_verify)
         if res.status_code != 200:
-            raise AssertionException("Error retrieving Sign group list")
+            raise AssertionException("Error retrieving Sign group list " + str(res.content))
         groups = {}
         sign_groups = res.json()
         for group in sign_groups['groupInfoList']:
@@ -139,9 +150,10 @@ class SignClient:
         """
         if self.api_url is None or self.groups is None:
             self._init()
-        res = requests.post(self.api_url + 'groups', headers=self.header_json(), data=json.dumps({'groupName': group}))
+        res = requests.post(self.api_url + 'groups', headers=self.header_json(),
+                            data=json.dumps({'groupName': group}), verify=self.ssl_verify)
         if res.status_code != 201:
-            raise AssertionException("Failed to create Sign group '{}' (reason: {})".format(group, res.reason))
+            raise AssertionException("Failed to create Sign group '{}' (reason: {})".format(group, res.content))
         self.groups[group] = res.json()['groupId']
 
     def update_user(self, user_id, data):
@@ -154,9 +166,9 @@ class SignClient:
         if self.api_url is None or self.groups is None:
             self._init()
 
-        res = requests.put(self.api_url + 'users/' + user_id, headers=self.header_json(), data=json.dumps(data))
+        res = requests.put(self.api_url + 'users/' + user_id, headers=self.header_json(), data=json.dumps(data), verify=self.ssl_verify)
         if res.status_code != 200:
-            raise AssertionException("Failed to update user '{}' (reason: {})".format(user_id, res.reason))
+            raise AssertionException("Failed to update user '{}' (reason: {})".format(user_id, res.content))
 
     @staticmethod
     def user_roles(user):
