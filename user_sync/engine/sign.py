@@ -62,9 +62,6 @@ class SignSyncEngine:
         :param directory_connector:
         :return:
         """
-        if self.test_mode:
-            self.logger.info("Sign Sync disabled in test mode")
-            return
         # directory_users = self.read_desired_user_groups(directory_groups, directory_connector)
         self.read_desired_user_groups(directory_groups, directory_connector)
         # if directory_users is None:

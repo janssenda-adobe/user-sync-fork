@@ -38,7 +38,12 @@ logging:
   file_log_name_format: '{:%Y-%m-%d}-sign.log'
   file_log_level: info
   console_log_level: debug
-  
+
+# If enabled, sync will only log what it intends to do.  Different from user-sync
+# since there is no 'test mode' for sign API
+test_mode: False
+
 # Defaults for options that can be passed as CLI options
 invocation_defaults:
   users: mapped
+

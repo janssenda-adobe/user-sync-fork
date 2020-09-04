@@ -37,6 +37,7 @@ def config_schema() -> Schema:
             'file_log_level': Or('info', 'debug'), #TODO: what are the valid values here?
             'console_log_level': Or('info', 'debug'), #TODO: what are the valid values here?
         },
+        'test_mode': bool,
         'invocation_defaults': {
             'users': Or('mapped', 'all'), #TODO: single "source of truth" for these options
         }
