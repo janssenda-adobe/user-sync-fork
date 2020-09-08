@@ -426,7 +426,7 @@ class UserFactory:
 
         for key, value in self.inclusion_filter.items():
             try:
-                rec_val = record.get(key)
+                rec_val = record[key]
                 if self.decode_string(rec_val) != self.decode_string(value):
                     self.logger.info("Skipping user {0} due to filter: {1} = {2}".format(record['email'], key, rec_val))
                     return True
