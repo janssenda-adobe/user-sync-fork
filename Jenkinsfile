@@ -36,6 +36,10 @@ pipeline {
                             env.BUILD_EDITION = 'noext'
                             env.UST_EXTENSION = '0'
                             break
+                        case 'UST Custom Build (vossen)':
+                            env.BUILD_EDITION = 'experimental'
+                            env.UST_EXTENSION = '1'
+                            break
                         default:
                             error('Project name did not match and build edition')
                             break
