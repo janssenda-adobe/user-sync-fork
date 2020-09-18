@@ -111,6 +111,7 @@ class SignClient:
             user['roles'] = self.user_roles(user)
             users[user['email']] = user
             self.logger.debug('retrieved user details for Sign user {}'.format(user['email']))
+            self.logger.trace(str(user))
 
         return users
 

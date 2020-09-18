@@ -54,16 +54,23 @@ from user_sync.version import __version__ as app_version
 LOG_STRING_FORMAT = '%(asctime)s %(process)d %(levelname)s %(name)s - %(message)s'
 LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+# Trace logger for debugging
+logging.TRACE_NUM = 5
+logging.addLevelName(logging.TRACE_NUM, "TRACE")
+def trace(self, message, *args, **kws):
+    if self.isEnabledFor(logging.TRACE_NUM):
+        self._log(logging.TRACE_NUM, message, args, **kws)
+logging.Logger.trace = trace
+
 # file logger, defined early so later functions can refer to it.
 logger = logging.getLogger('main')
-
 
 def init_console_log():
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(logging.Formatter(LOG_STRING_FORMAT, LOG_DATE_FORMAT))
     root_logger = logging.getLogger()
     root_logger.addHandler(handler)
-    root_logger.setLevel(logging.DEBUG)
+    root_logger.setLevel(logging.TRACE_NUM)
     return handler
 
 
@@ -317,6 +324,7 @@ def init_log(logging_config):
     options = builder.get_options()
 
     level_lookup = {
+        'trace': logging.TRACE_NUM,
         'debug': logging.DEBUG,
         'info': logging.INFO,
         'warning': logging.WARNING,
@@ -347,7 +355,6 @@ def init_log(logging_config):
         logging.getLogger().addHandler(file_handler)
         if unknown_file_log_level:
             logger.log(logging.WARNING, 'Unknown file log level: %s setting to info' % options['file_log_level'])
-
 
 def log_parameters(argv, config_loader):
     """
