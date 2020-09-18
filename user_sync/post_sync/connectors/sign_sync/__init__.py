@@ -16,6 +16,8 @@ class SignConnector(PostSyncConnector):
     def __init__(self, config_options, test_mode=False):
         super().__init__()
         self.logger = logging.getLogger(self.name)
+        if not hasattr(self.logger, 'trace'):
+            self.logger.trace = lambda x: ()
         sync_config = DictConfig('<%s configuration>' % self.name, config_options)
         self.user_groups = sync_config.get_list('user_groups', True)
         if self.user_groups is None:
