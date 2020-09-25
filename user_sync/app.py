@@ -28,6 +28,7 @@ from pathlib import Path
 import click
 import six
 from click_default_group import DefaultGroup
+import umapi_client
 
 import user_sync.certgen
 import user_sync.cli
@@ -366,6 +367,7 @@ def log_parameters(argv, config_loader):
     :return: None
     """
     logger.info('Python version: %s.%s.%s on %s' % (sys.version_info[:3] + (sys.platform,)))
+    logger.info('Umapi version: ' + str(umapi_client.version.__version__))
     logger.info('------- Command line arguments -------')
     logger.info(' '.join(argv))
     logger.debug('-------- Resulting invocation options --------')
