@@ -1,21 +1,21 @@
-import logging
 import codecs
-
-from copy import deepcopy
+import logging
 from collections import defaultdict
+from copy import deepcopy
 from typing import Dict
+
 from schema import Schema
 
 from user_sync.config.common import DictConfig, ConfigLoader, ConfigFileLoader, resolve_invocation_options
-from user_sync.error import AssertionException
 from user_sync.engine.common import AdobeGroup
 from user_sync.engine.sign import SignSyncEngine
+from user_sync.error import AssertionException
+from user_sync.helper import normalize_string
 from .error import ConfigValidationError
-from ..helper import normalize_string
 
 
 def config_schema() -> Schema:
-    from schema import And, Optional, Or, Regex
+    from schema import And, Or, Regex
     return Schema({
         'sign_orgs': { str: str },
         'identity_source': {
