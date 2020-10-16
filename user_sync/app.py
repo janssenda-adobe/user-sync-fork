@@ -17,7 +17,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from sys import platform
 import logging
 import os
 import shutil
@@ -34,21 +33,19 @@ import user_sync.certgen
 import user_sync.cli
 import user_sync.config
 import user_sync.connector.directory
+import user_sync.connector.directory_csv
 import user_sync.connector.directory_ldap
 import user_sync.connector.directory_okta
-import user_sync.connector.directory_csv
-import user_sync.post_sync.connectors.sign_sync
+import user_sync.connector.umapi
 import user_sync.connector.umapi
 import user_sync.encryption
 import user_sync.helper
 import user_sync.lockfile
+import user_sync.post_sync.connectors.sign_sync
 import user_sync.resource
 import user_sync.rules
-
-import user_sync.connector.umapi
-from user_sync.post_sync.manager import PostSyncManager
-
 from user_sync.error import AssertionException
+from user_sync.post_sync.manager import PostSyncManager
 from user_sync.version import __version__ as app_version
 
 LOG_STRING_FORMAT = '%(asctime)s %(process)d %(levelname)s %(name)s - %(message)s'
@@ -359,12 +356,15 @@ def begin_work(config_loader):
     directory_groups = config_loader.get_directory_groups()
     rule_config = config_loader.get_rule_options()
 
-    # todo if try error block neeed of if stmt
-    ssl_cert_verify = rule_config['ssl_cert_verify']
+    try:
+        ssl_cert_verify = rule_config['ssl_cert_verify']
+    except KeyError:
+        print("Verify ssl_cert_verify value in properties file")
 
     if not ssl_cert_verify:
       logger.warning("SSL certificate verification is bypassed.  Consider disabling this option and using the "
                      "REQUESTS_CA_BUNDLE environment variable to specify the PEM firewall bundle...")
+
       # Suppress only the single warning from urllib3 needed.
       # noinspection PyUnresolvedReferences
       requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
