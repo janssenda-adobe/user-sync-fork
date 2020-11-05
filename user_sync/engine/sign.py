@@ -85,17 +85,14 @@ class SignSyncEngine:
 
         for org_name, sign_connector in self.connectors.items():
             # Create any new Sign groups
-            org_directory_groups = self._groupify(
-                org_name, directory_groups.values())
+            org_directory_groups = self._groupify(org_name, directory_groups.values())
             org_sign_groups = [x.lower() for x in sign_connector.sign_groups()]
             for directory_group in org_directory_groups:
                 if (directory_group.lower() not in org_sign_groups):
-                    self.logger.info(
-                        "Creating new Sign group: {}".format(directory_group))
+                    self.logger.info("Creating new Sign group: {}".format(directory_group))
                     sign_connector.create_group(directory_group)
             # Update user details or insert new user        
-            self.update_sign_users(
-                    self.directory_user_by_user_key, sign_connector, org_name)
+            self.update_sign_users(self.directory_user_by_user_key, sign_connector, org_name)
             if self.options['deactivate_users'] is True and sign_connector.neptune_console is True:
                 self.deactivate_sign_users(self.directory_user_by_user_key, sign_connector, org_name)
         self.log_action_summary()
@@ -220,13 +217,13 @@ class SignSyncEngine:
         :param org_name:
         :return:
         """
-        return directory_user['sign_groups']['groups'][0].umapi_name == org_name
+        return directory_user['sign_group']['group'].umapi_name == org_name
 
     def retrieve_assignment_group(self, directory_user):
-        return directory_user['sign_groups']['groups'][0].group_name
+        return directory_user['sign_group']['group'].group_name
 
     def retrieve_admin_role(self, directory_user):
-        return directory_user['sign_groups']['roles']
+        return directory_user['sign_group']['roles']
 
     @staticmethod
     def _groupify(org_name, groups):
@@ -274,9 +271,8 @@ class SignSyncEngine:
                 self.logger.warning(
                     "Ignoring directory user with empty user key: %s", directory_user)
                 continue
-            sign_groups = self.extract_mapped_group(
-                directory_user['groups'], mappings)
-            directory_user['sign_groups'] = sign_groups
+            sign_group = self.extract_mapped_group(directory_user['groups'], mappings)
+            directory_user['sign_group'] = sign_group
             directory_user_by_user_key[user_key] = directory_user
 
     def get_directory_user_key(self, directory_user):
@@ -325,35 +321,25 @@ class SignSyncEngine:
 
     def extract_mapped_group(self, directory_user_group, group_mapping):
 
-        # for directory_group, sign_group_mapping in group_mapping.items():
-        #     if (directory_user_group[0] == directory_group):
-        #         return sign_group_mapping
-
         roles = []
-        groups = {}
-        for g in directory_user_group:
-            mapping = group_mapping.get(g)
-            if mapping:
-                # Always append roles.
-                roles.extend(mapping['roles'])
+        matched_group = None
 
-                # Indiscriminately add groups to a list.  We can choose the first entry for match later
-                groups[g] = mapping
+        matched_mappings = {g: m for g, m in group_mapping.items() if g in directory_user_group}
+        ordered_mappings = list(matched_mappings.values())
+        ordered_mappings.sort(key=lambda x: x['priority'])
 
-        # Now that we collected all groups and roles (which could come in any order from directory source,
-        # we need to find the first matching group present in the YML file order
-        # {k: v for k, v in sorted(x.items(), key=lambda item: item[1])}
-        ordered_groups = {k: v for k,v in sorted(group_mapping.items(), key=lambda x:x[1]['priority'])}
-        for n, g in ordered_groups.items():
-            if n in directory_user_group:
-                ug = g
-                break
-        print()
+        if ordered_mappings is not None:
+            for g in ordered_mappings:
+                roles.extend(g['roles'])
+            if ordered_mappings[0]['groups']:
+                matched_group = ordered_mappings[0]['groups'][0]
 
-        # sign_group_mapping = {
-        #     'groups': group_list[:1],
-        #     'roles': list(set(roles))
-        # }
+        # return roles as list instead of set to maintain compatability
+        # should probably be a set, however
+        sign_group_mapping = {
+            'group': matched_group,
+            'roles': list(set(roles))
+        }
 
         # For illustration.  Just return line 344 instead.
         return sign_group_mapping
