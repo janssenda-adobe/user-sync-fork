@@ -98,7 +98,7 @@ class SignSyncEngine:
                     self.directory_user_by_user_key, sign_connector, org_name)
             if self.options['deactivate_users'] is True and sign_connector.neptune_console is True:
                 self.deactivate_sign_users(self.directory_user_by_user_key, sign_connector, org_name)
-        #self.log_action_summary()
+        self.log_action_summary()
 
     def log_action_summary(self):
         """
@@ -108,7 +108,7 @@ class SignSyncEngine:
         # Number of directory users read
         self.action_summary['directory_users_read'] = len(self.directory_user_by_user_key)
         # Number of Sign Admins mapped
-        #self.action_summary['sign_admins_matched'] = len(self.admin_roles)
+        self.action_summary['sign_admins_matched'] = 0 #$len(self.admin_roles)
         # Total Number of Sign users
         self.action_summary['sign_users_read'] = len(self.total_sign_user_count)
         # Number of Sign users created/removed/updated
@@ -324,9 +324,42 @@ class SignSyncEngine:
         return identity_type
 
     def extract_mapped_group(self, directory_user_group, group_mapping):
-        for directory_group, sign_group_mapping in group_mapping.items():
-            if (directory_user_group[0] == directory_group):
-                return sign_group_mapping
+
+        # for directory_group, sign_group_mapping in group_mapping.items():
+        #     if (directory_user_group[0] == directory_group):
+        #         return sign_group_mapping
+
+        roles = []
+        groups = {}
+        for g in directory_user_group:
+            mapping = group_mapping.get(g)
+            if mapping:
+                # Always append roles.
+                roles.extend(mapping['roles'])
+
+                # Indiscriminately add groups to a list.  We can choose the first entry for match later
+                groups[g] = mapping
+
+        # Now that we collected all groups and roles (which could come in any order from directory source,
+        # we need to find the first matching group present in the YML file order
+        # {k: v for k, v in sorted(x.items(), key=lambda item: item[1])}
+        ordered_groups = {k: v for k,v in sorted(group_mapping.items(), key=lambda x:x[1]['priority'])}
+        for n, g in ordered_groups.items():
+            if n in directory_user_group:
+                ug = g
+                break
+        print()
+
+        # sign_group_mapping = {
+        #     'groups': group_list[:1],
+        #     'roles': list(set(roles))
+        # }
+
+        # For illustration.  Just return line 344 instead.
+        return sign_group_mapping
+
+
+
 
     def update_existing_users(self, sign_connector, sign_user, directory_user, group_id, user_roles, assignment_group):
         """

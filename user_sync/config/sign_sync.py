@@ -117,21 +117,44 @@ class SignConfigLoader(ConfigLoader):
         group_config = self.main_config.get_list_config('user_management', True)
         if group_config is None:
             return group_mapping
-        for mapping in group_config.iter_dict_configs():
+        for i, mapping in enumerate(group_config.iter_dict_configs()):
             dir_group = mapping.get_string('directory_group')
-            group_mapping[dir_group]['groups'] = []
-            group_mapping[dir_group]['roles'] = []
-            adobe_group = mapping.get_string('sign_group', True)
-            admin_roles = mapping.get_list('admin_role', True)
-            if adobe_group is not None:
-                group = AdobeGroup.create(adobe_group)
+            if dir_group not in group_mapping:
+                # Assign an ordering (priority) for sorting later, since
+                # we cannot depend on defaultdict to preserve order.
+                group_mapping[dir_group]['priority'] = i
+                group_mapping[dir_group]['groups'] = []
+                group_mapping[dir_group]['roles'] = []
+
+            # Temp lines until roles as STR
+            temp_roles = mapping.get_list('admin_role', True)
+            role_str = temp_roles[0] if temp_roles else None
+
+            # Add all roles associated with a directory group
+            # This way, the collection or roles will be applied correctly
+            # instead of only the role associated with one group
+            # We should really use a set() for roles, but list is elsewhere in code
+            # so following convention we do a checked append
+            if role_str is not None and role_str not in group_mapping[dir_group]['roles']:
+                group_mapping[dir_group]['roles'].append(role_str)
+
+            sign_group = mapping.get_string('sign_group', True)
+            if sign_group is not None:
+
+                # AdobeGroup will return the same memory instance of a pre-existing group,
+                # so we create it no matter what
+                group = AdobeGroup.create(sign_group)
+                if group is None:
+                    raise AssertionException('Bad Sign group: "{}" in directory group: "{}"'.format(sign_group, dir_group))
                 if group.umapi_name is None:
                     group.umapi_name = self.DEFAULT_ORG_NAME
-            if group is None:
-                raise AssertionException('Bad Sign group: "{}" in directory group: "{}"'.format(adobe_group, dir_group))
-            if group not in group_mapping[dir_group]:
-                group_mapping[dir_group]['groups'].append(group)
-                group_mapping[dir_group]['roles'] = admin_roles
+
+                # Note checking a memory equivalency, not group name
+                # the groups in group_mapping are stored in order of YML file - important
+                # for choosing first match for a user later
+                if group not in group_mapping[dir_group]['groups']:
+                    group_mapping[dir_group]['groups'].append(group)
+
         return dict(group_mapping)
 
     def get_directory_connector_module_name(self) -> str:
