@@ -164,8 +164,6 @@ class SignSyncEngine:
 
             group_id = sign_connector.get_group(assignment_group.lower())
             user_roles = self.retrieve_admin_role(directory_user)
-            #admin_roles = self.retrieve_admin_role(directory_user)
-            #user_roles = self.resolve_new_roles(directory_user, sign_user, admin_roles)
             if sign_user is None:
                 # Insert new user if flag is enabled and if Neptune Console
                 if self.options['create_users'] is True and sign_connector.neptune_console is True:
@@ -191,23 +189,6 @@ class SignSyncEngine:
         if isinstance(sign_roles, str):
             sign_roles = [sign_roles]
         return sorted(resolved_roles) == sorted(sign_roles)
-
-    # @staticmethod
-    # def resolve_new_roles(directory_user, sign_user, user_roles):
-    #     """
-    #     Updates the user role (if applicable) as specified in the configuration
-    #     :param resolved_roles:
-    #     :param sign_roles:
-    #     :param user_roles:
-    #     :return:
-    #     """
-    #     if (user_roles is None or all(x is None for x in user_roles)):
-    #         if sign_user is None:
-    #             return ['NORMAL_USER']
-    #         else:
-    #             return sign_user['roles']
-    #     else:
-    #        return user_roles
 
     def should_sync(self, directory_user, org_name):
         """
