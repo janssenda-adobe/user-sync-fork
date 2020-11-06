@@ -103,10 +103,11 @@ class SignSyncEngine:
         logger = self.logger
 
         self.action_summary['directory_users_read'] = len(self.directory_user_by_user_key)
+        self.action_summary['directory_users_selected_for_input'] = \
+            len(self.directory_user_by_user_key) - len(self.directory_users_excluded)
+        self.action_summary['directory_users_excluded'] = len(self.directory_users_excluded)
         self.action_summary['sign_users_read'] = self.total_sign_user_count
         self.action_summary['sign_only_user_count'] = len(self.sign_only_users_by_email)
-        self.action_summary['sign_users_created'] = len(self.sign_users_created)
-        self.action_summary['sign_users_deactivated'] = len(self.sign_users_deactivated)
         self.action_summary['sign_users_updated'] = len(
             self.sign_users_group_updates | self.sign_users_role_updates)
         self.action_summary['sign_users_matched_groups'] = len(self.sign_users_matched_groups)
@@ -114,19 +115,21 @@ class SignSyncEngine:
         self.action_summary['sign_users_group_updates'] = len(self.sign_users_group_updates)
         self.action_summary['sign_users_role_updates'] = len(self.sign_users_role_updates)
         self.action_summary['sign_users_matched_no_updates'] = len(self.sign_users_matched_no_updates)
-        self.action_summary['directory_users_excluded'] = len(self.directory_users_excluded)
+        self.action_summary['sign_users_created'] = len(self.sign_users_created)
+        self.action_summary['sign_users_deactivated'] = len(self.sign_users_deactivated)
 
         action_summary_description = [
             ['directory_users_read', 'Number of directory users read'],
+            ['directory_users_selected_for_input', 'Number of directory selected for input'],
             ['directory_users_excluded', 'Number of directory users excluded'],
             ['sign_users_read', ' Number of Sign users read'],
             ['sign_only_user_count', ' Number of Sign users not in directory (sign-only)'],
             ['sign_users_updated', 'Number of Sign users updated'],
-            ['sign_users_matched_no_updates', 'Number of users matched with no updates'],
             ['sign_users_matched_groups', 'Number of users with matched groups unchanged'],
             ['sign_admins_matched', 'Number of users with admin roles unchanged'],
             ['sign_users_group_updates', 'Number of users with groups updated'],
             ['sign_users_role_updates', 'Number of users admin roles updated'],
+            ['sign_users_matched_no_updates', 'Number of users matched with no updates'],
         ]
 
         if self.options['create_users']:
