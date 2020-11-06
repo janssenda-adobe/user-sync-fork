@@ -179,18 +179,16 @@ class SignSyncEngine:
 
 
     @staticmethod
-    def roles_match(resolved_roles, sign_roles):
+    def roles_match(resolved_roles, sign_roles) -> bool:
         """
         Checks if the existing user role in Sign Console is same as in configuration
         :param resolved_roles:
         :param sign_roles:
         :return:
         """
-        if isinstance(sign_roles, str):
-            sign_roles = [sign_roles]
         return sorted(resolved_roles) == sorted(sign_roles)
 
-    def should_sync(self, directory_user, org_name):
+    def should_sync(self, directory_user, org_name) -> bool:
         """
         Check if the user belongs to org.  If user has NO groups specified,
         we assume primary and return True (else we cannot assign roles without
@@ -202,11 +200,11 @@ class SignSyncEngine:
         group = directory_user['sign_group']['group']
         return group.umapi_name == org_name if group else True
 
-    def retrieve_assignment_group(self, directory_user):
+    def retrieve_assignment_group(self, directory_user) -> str:
         group = directory_user['sign_group']['group']
         return group.group_name if group else None
 
-    def retrieve_admin_role(self, directory_user):
+    def retrieve_admin_role(self, directory_user) -> list:
         return directory_user['sign_group']['roles']
 
     @staticmethod
@@ -303,9 +301,9 @@ class SignSyncEngine:
             self.logger.warning('Found user with no identity type, using %s: %s', identity_type, directory_user)
         return identity_type
 
-    def extract_mapped_group(self, directory_user_group, group_mapping):
+    def extract_mapped_group(self, directory_user_group, group_mapping) -> dict:
 
-        roles = []
+        roles = set()
         matched_group = None
 
         matched_mappings = {g: m for g, m in group_mapping.items() if g in directory_user_group}
@@ -314,15 +312,14 @@ class SignSyncEngine:
 
         if ordered_mappings is not None:
             for g in ordered_mappings:
-                roles.extend(g['roles'])
+                roles |= g['roles']
             if ordered_mappings[0]['groups']:
                 matched_group = ordered_mappings[0]['groups'][0]
 
-        # return roles as list instead of set to maintain compatability
-        # should probably be a set, however
+        # return roles as list instead of set
         sign_group_mapping = {
             'group': matched_group,
-            'roles': list(set(roles)) if roles else ['NORMAL_USER']
+            'roles': list(roles)
         }
 
         # For illustration.  Just return line 344 instead.
@@ -388,17 +385,14 @@ class SignSyncEngine:
             self.logger.error(format(e))
         return
         
-    def deactivate_sign_users(self, directory_users, sign_connector, org_name):
+    def deactivate_sign_users(self, directory_users, sign_connector):
         """
         Searches users to deactivate in the Sign Netpune console
         :param sign_connector:
         :param sign_user:
         :return:
         """
-        #sign_users = self.sign_users_by_org[org_name]
-        #if sign_users is None:
         sign_users = sign_connector.get_users()
-        director_users_emails = []
         director_users_emails = list(map(lambda directory_user:directory_user['email'].lower(), directory_users.values()))
         for _, sign_user in sign_users.items():
             if sign_user['email'].lower() not in director_users_emails:
