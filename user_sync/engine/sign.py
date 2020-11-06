@@ -153,6 +153,7 @@ class SignSyncEngine:
         self.sign_users_by_org[org_name] = sign_users
         for _, directory_user in directory_users.items():
             sign_user = sign_users.get(directory_user['email'])
+
             if not self.should_sync(directory_user, org_name):
                 continue
 
@@ -162,15 +163,16 @@ class SignSyncEngine:
                 assignment_group = self.DEFAULT_GROUP_NAME
 
             group_id = sign_connector.get_group(assignment_group.lower())
-            admin_roles = self.retrieve_admin_role(directory_user)
-            user_roles = self.resolve_new_roles(
-                directory_user, sign_user, admin_roles)
+            user_roles = self.retrieve_admin_role(directory_user)
+            #admin_roles = self.retrieve_admin_role(directory_user)
+            #user_roles = self.resolve_new_roles(directory_user, sign_user, admin_roles)
             if sign_user is None:
                 # Insert new user if flag is enabled and if Neptune Console
                 if self.options['create_users'] is True and sign_connector.neptune_console is True:
                     self.insert_new_users(
                         sign_connector, directory_user, user_roles, group_id, assignment_group)
                 else:
+                    self.logger.info("User {} not present in Sign and will be skipped.".format(directory_user['email']))
                     continue
             else:
                 # Update existing users
@@ -190,37 +192,38 @@ class SignSyncEngine:
             sign_roles = [sign_roles]
         return sorted(resolved_roles) == sorted(sign_roles)
 
-    @staticmethod
-    def resolve_new_roles(directory_user, sign_user, user_roles):
-        """
-        Updates the user role (if applicable) as specified in the configuration
-        :param resolved_roles:
-        :param sign_roles:
-        :param user_roles:
-        :return:
-        """
-        if (user_roles is None or all(x is None for x in user_roles)):
-            if sign_user is None:
-                return ['NORMAL_USER']
-            else:
-                return sign_user['roles']
-        else:
-           return user_roles
+    # @staticmethod
+    # def resolve_new_roles(directory_user, sign_user, user_roles):
+    #     """
+    #     Updates the user role (if applicable) as specified in the configuration
+    #     :param resolved_roles:
+    #     :param sign_roles:
+    #     :param user_roles:
+    #     :return:
+    #     """
+    #     if (user_roles is None or all(x is None for x in user_roles)):
+    #         if sign_user is None:
+    #             return ['NORMAL_USER']
+    #         else:
+    #             return sign_user['roles']
+    #     else:
+    #        return user_roles
 
     def should_sync(self, directory_user, org_name):
         """
-        Initial gatekeeping to determine if user is candidate for Sign sync
-        Any checks that don't depend on the Sign record go here
-        Sign record must be defined for user, and user must belong to at least one entitlement group
-        and user must be accepted identity type
+        Check if the user belongs to org.  If user has NO groups specified,
+        we assume primary and return True (else we cannot assign roles without
+        groups)
         :param umapi_user:
         :param org_name:
         :return:
         """
-        return directory_user['sign_group']['group'].umapi_name == org_name
+        group = directory_user['sign_group']['group']
+        return group.umapi_name == org_name if group else True
 
     def retrieve_assignment_group(self, directory_user):
-        return directory_user['sign_group']['group'].group_name
+        group = directory_user['sign_group']['group']
+        return group.group_name if group else None
 
     def retrieve_admin_role(self, directory_user):
         return directory_user['sign_group']['roles']
@@ -338,7 +341,7 @@ class SignSyncEngine:
         # should probably be a set, however
         sign_group_mapping = {
             'group': matched_group,
-            'roles': list(set(roles))
+            'roles': list(set(roles)) if roles else ['NORMAL_USER']
         }
 
         # For illustration.  Just return line 344 instead.
@@ -365,14 +368,17 @@ class SignSyncEngine:
             "lastName": sign_user['lastName'],
             "roles": user_roles,
         }
-        if sign_user['group'].lower() == assignment_group.lower() and self.roles_match(user_roles, sign_user['roles']):
+        groups_match = sign_user['group'].lower() == assignment_group.lower()
+        roles_match = self.roles_match(user_roles, sign_user['roles'])
+        if groups_match and roles_match:
             self.logger.debug(
                 "skipping Sign update for '{}' -- no updates needed".format(directory_user['email']))
             return
         try:
             sign_connector.update_user(sign_user['userId'], update_data)
-            self.logger.info("Updated Sign user '{}', Group: '{}', Roles: {}".format(
-                directory_user['email'], assignment_group, update_data['roles']))
+            self.logger.info("Updated Sign user '{}', Group ({}): '{}', Roles ({}): {}".format(
+                directory_user['email'], 'unchanged' if groups_match else 'new', assignment_group,
+                'unchanged' if roles_match else 'new', update_data['roles']))
         except AssertionError as e:
             self.logger.error("Error updating user {}".format(e))
 
