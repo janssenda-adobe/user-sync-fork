@@ -98,56 +98,31 @@ class SignSyncEngine:
         self.log_action_summary()
 
     def log_action_summary(self):
-        """
-        """
-        logger = self.logger
 
-        self.action_summary['directory_users_read'] = len(self.directory_user_by_user_key)
-        self.action_summary['directory_users_selected_for_input'] = \
-            len(self.directory_user_by_user_key) - len(self.directory_users_excluded)
-        self.action_summary['directory_users_excluded'] = len(self.directory_users_excluded)
-        self.action_summary['sign_users_read'] = self.total_sign_user_count
-        self.action_summary['sign_only_user_count'] = len(self.sign_only_users_by_email)
-        self.action_summary['sign_users_updated'] = len(
-            self.sign_users_group_updates | self.sign_users_role_updates)
-        self.action_summary['sign_users_matched_groups'] = len(self.sign_users_matched_groups)
-        self.action_summary['sign_admins_matched'] = len(self.sign_admins_matched)
-        self.action_summary['sign_users_group_updates'] = len(self.sign_users_group_updates)
-        self.action_summary['sign_users_role_updates'] = len(self.sign_users_role_updates)
-        self.action_summary['sign_users_matched_no_updates'] = len(self.sign_users_matched_no_updates)
-        self.action_summary['sign_users_created'] = len(self.sign_users_created)
-        self.action_summary['sign_users_deactivated'] = len(self.sign_users_deactivated)
-
-        action_summary_description = [
-            ['directory_users_read', 'Number of directory users read'],
-            ['directory_users_selected_for_input', 'Number of directory selected for input'],
-            ['directory_users_excluded', 'Number of directory users excluded'],
-            ['sign_users_read', ' Number of Sign users read'],
-            ['sign_only_user_count', ' Number of Sign users not in directory (sign-only)'],
-            ['sign_users_updated', 'Number of Sign users updated'],
-            ['sign_users_matched_groups', 'Number of users with matched groups unchanged'],
-            ['sign_admins_matched', 'Number of users with admin roles unchanged'],
-            ['sign_users_group_updates', 'Number of users with groups updated'],
-            ['sign_users_role_updates', 'Number of users admin roles updated'],
-            ['sign_users_matched_no_updates', 'Number of users matched with no updates'],
-        ]
+        self.action_summary = {
+            'Number of directory users read': len(self.directory_user_by_user_key),
+            'Number of directory selected for input': len(self.directory_user_by_user_key) - len(self.directory_users_excluded),
+            'Number of directory users excluded': len(self.directory_users_excluded),
+            'Number of Sign users read': self.total_sign_user_count,
+            'Number of Sign users not in directory (sign-only)': len(self.sign_only_users_by_email),
+            'Number of Sign users updated': len(self.sign_users_group_updates | self.sign_users_role_updates),
+            'Number of users with matched groups unchanged': len(self.sign_users_matched_groups),
+            'Number of users with admin roles unchanged': len(self.sign_admins_matched),
+            'Number of users with groups updated': len(self.sign_users_group_updates),
+            'Number of users admin roles updated': len(self.sign_users_role_updates),
+            'Number of users matched with no updates': len(self.sign_users_matched_no_updates),
+        }
 
         if self.options['create_users']:
-            action_summary_description.append(['sign_users_created', 'Number of Sign users created'])
+            self.action_summary['Number of Sign users created'] = len(self.sign_users_created)
         if self.options['deactivate_users']:
-            action_summary_description.append(['sign_users_deactivated', 'Number of Sign users deactivated'])
+            self.action_summary['Number of Sign users deactivated'] = len(self.sign_users_deactivated)
 
-        pad = 0
-        for action_description in action_summary_description:
-            if len(action_description[1]) > pad:
-                pad = len(action_description[1])
-
+        pad = max(len(k) for k in self.action_summary)
         header = '------- Action Summary -------'
-        logger.info('---------------------------' + header + '---------------------------')
-        for action_description in action_summary_description:
-            description = action_description[1].rjust(pad, ' ')
-            action_count = self.action_summary[action_description[0]]
-            logger.info('  %s: %s', description, action_count)
+        self.logger.info('---------------------------' + header + '---------------------------')
+        for description, count in self.action_summary.items():
+            self.logger.info('  {}: {}'.format(description.rjust(pad, ' '), count))
 
     def update_sign_users(self, directory_users, sign_connector, org_name):
         """
