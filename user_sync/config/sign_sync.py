@@ -29,9 +29,8 @@ def config_schema() -> Schema:
         'user_management': [{
             'directory_group': Or(None, And(str, len)),
             'sign_group': Or(None, And(str, len)),
-            'admin_role': Or(None, [
-                Or(None, 'GROUP_ADMIN', 'ACCOUNT_ADMIN')
-                ]), #TODO: single "source of truth" for these options
+            Optional('group_admin', default=False): Or(bool, None),
+            Optional('account_admin', default=False): Or(bool, None)
         }],
         'logging': {
             'log_to_file': bool,
@@ -112,7 +111,7 @@ class SignConfigLoader(ConfigLoader):
         except SchemaError as e:
             raise ConfigValidationError(e.code) from e
 
-    def get_directory_groups(self) -> Dict[str, AdobeGroup]:
+    def get_directory_groups(self) -> Dict[str, dict]:
         group_mapping = defaultdict(dict)
         group_config = self.main_config.get_list_config('user_management', True)
         if group_config is None:
@@ -124,19 +123,15 @@ class SignConfigLoader(ConfigLoader):
                 # we cannot depend on defaultdict to preserve order.
                 group_mapping[dir_group]['priority'] = i
                 group_mapping[dir_group]['groups'] = []
-                group_mapping[dir_group]['roles'] = []
-
-            # Temp lines until roles as STR
-            temp_roles = mapping.get_list('admin_role', True)
-            role_str = temp_roles[0] if temp_roles else None
+                group_mapping[dir_group]['roles'] = set()
 
             # Add all roles associated with a directory group
             # This way, the collection or roles will be applied correctly
             # instead of only the role associated with one group
-            # We should really use a set() for roles, but list is elsewhere in code
-            # so following convention we do a checked append
-            if role_str is not None and role_str not in group_mapping[dir_group]['roles']:
-                group_mapping[dir_group]['roles'].append(role_str)
+            if mapping.get_bool('group_admin', True):
+                group_mapping[dir_group]['roles'].add('GROUP_ADMIN')
+            if mapping.get_bool('account_admin', True):
+                group_mapping[dir_group]['roles'].add('ACCOUNT_ADMIN')
 
             sign_group = mapping.get_string('sign_group', True)
             if sign_group is not None:

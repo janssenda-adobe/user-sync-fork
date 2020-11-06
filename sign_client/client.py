@@ -1,6 +1,8 @@
 import logging
 import requests
 import json
+
+from user_sync.config.common import as_list
 from user_sync.error import AssertionException
 
 
@@ -152,6 +154,8 @@ class SignClient:
         if self.api_url is None or self.groups is None:
             self._init()
 
+
+        data['roles'] = self.user_roles(data)
         res = requests.put(self.api_url + 'users/' + user_id, headers=self.header_json(), data=json.dumps(data))
         if res.status_code != 200:
             raise AssertionException("Failed to update user '{}' (reason: {})".format(user_id, res.reason))
@@ -162,7 +166,8 @@ class SignClient:
         Resolve user roles
         :return: list[]
         """
-        return ['NORMAL_USER'] if 'roles' not in user else user['roles']
+        role = as_list(user.get('roles'))
+        return ['NORMAL_USER'] if not role else role
 
     def insert_user(self, data):
         """
