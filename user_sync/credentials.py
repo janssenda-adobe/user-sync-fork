@@ -1,3 +1,5 @@
+import os
+
 import binascii
 import logging
 from collections import Mapping
@@ -110,6 +112,7 @@ class CredentialConfig:
 
         # The dictionary including comments that will be updated and re-saved
         self.load()
+        self.validate()
 
     @classmethod
     def create(self, subclass, filename, auto=False):
@@ -200,6 +203,17 @@ class CredentialConfig:
         """
         return self.filename + ":" + ":".join(identifier)
 
+    def validate(self):
+
+        for k in self.secured_keys:
+            if k.is_filepath():
+                val = self.get_nested_key(k.key_path)
+                print()
+
+
+
+        print()
+
     def store_key(self, key, value=None):
         """
         Takes a list of keys representing the path to a value in the YAML file, and constructs an identifier.
@@ -213,11 +227,15 @@ class CredentialConfig:
         if value is None:
             return
         if key.is_filepath:
-            if self.auto or click.confirm("Encrypt private key file?"):
+            value = os.path.abspath(value)
+            if not os.path.exists(value):
+                raise AssertionException("File specified in '{}' does not exist.\nMissing file: '{}'"
+                                         .format(self.get_qualified_identifier(key.key_path), value))
+            if self.auto or click.confirm("Encrypt file '{}'?".format(value)):
                 enc_key = self.encrypt_key(key)
                 self.logger.info("Encrypted private key file saved to: '{}' \n"
-                                 "'{}' added to '{}' and stored securely."
-                                 .format(self.get_nested_key(key.key_path), key.linked_key.key_path, self.filename))
+                                 "'{}' added to '{}' and password securely."
+                                 .format(value, key.linked_key.key_path, self.filename))
                 return enc_key
             else:
                 return
@@ -255,7 +273,9 @@ class CredentialConfig:
     def decrypt_key(self, key):
         if self.get_nested_key(key.linked_key.key_path) is None:
             raise AssertionException(
-                "Cannot decrypt key '{}'. Missing linked key '{}'".format(key.key_path, key.linked_key.key_path))
+                "Cannot decrypt key '{}'. Missing linked key '{}' in file  '{}'.  "
+                "If key is not encrypted, data may be malformed".format(
+                    key.key_path, key.linked_key.key_path, self.filename))
         value = self.get_nested_key(key.key_path)
         if key.is_filepath:
             with open(value, 'r') as f:
@@ -297,9 +317,12 @@ class CredentialConfig:
                 if decrypted_key is not None:
                     self.set_nested_key(key.key_path, pss(decrypted_key))
         if key.is_filepath:
-            decrypted_key = self.decrypt_key(key)
-            if decrypted_key is not None:
-                encryption.write_key(decrypted_key, self.get_nested_key(key.key_path))
+            filename = self.get_nested_key(key.key_path)
+            key_data = encryption.read_key(filename)
+            if not encryption.is_encryptable(key_data):
+                decrypted_key = self.decrypt_key(key)
+                if decrypted_key is not None:
+                    encryption.write_key(decrypted_key, filename)
         return stored_credential
 
     @classmethod
