@@ -134,14 +134,8 @@ class SignConnector(PostSyncConnector):
         :param org_name:
         :return:
         """
-        # UMAPI will often return a product profile with extra characters appended. This re.sub will remove that.
-        # eg. 'Example Product Profile' will come through as 'Example Product Profile_EC79122-provisioning'
-        umapi_groups = []
-        for group in umapi_user['groups']:
-            fixed_group = re.sub("_[A-Za-z0-9]+(?i)-provisioning$", '', group)
-            umapi_groups.append(fixed_group)
-        intersecting_groups = set(umapi_groups) & set(self.entitlement_groups[org_name])
 
+        intersecting_groups = set(umapi_user['groups']) & set(self.entitlement_groups[org_name])
         info = {
             'User is not none': sign_user is not None,
             'Umapi groups': umapi_user['groups'],
