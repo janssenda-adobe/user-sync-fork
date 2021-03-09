@@ -54,7 +54,7 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
     x = subprocess.check_output ('ls ' + str(tmpdir), shell=True)
     y = subprocess.check_output ('ls ' + str(tmpdir) + '/examples', shell=True)
 
-    raise Exception(str(tmpdir) + x + ' ::: ' + y)
+    raise Exception(str(tmpdir) + str(x) + ' ::: ' + str(y))
     #
     # with monkeypatch.context() as m:
     #     m.setattr(resource, "get_resource", resource_patch)
