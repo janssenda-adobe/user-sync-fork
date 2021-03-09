@@ -31,7 +31,7 @@ jobs:
           yum install -y python36u-devel python36u-pip python36u-virtualenv
           yum install -y python-devel python-pip python-virtualenv
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
-          python -V
+          python3 -V
       - name: Make Standalone
         run: |
           make standalone
