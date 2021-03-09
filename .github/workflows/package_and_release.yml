@@ -31,10 +31,9 @@ jobs:
           yum install -y gcc make python36u-devel python36u-pip python36u-virtualenv
           yum install -y python-devel python-pip python-virtualenv
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
+          update-alternatives --install /usr/bin/python python /usr/bin/python3
       - name: Make Standalone
         run: |
-          echo 'alias python="/usr/bin/python3"' >> /root/.bashrc && \
-          source /root/.bashrc
           pip3 install external/okta-0.0.3.1-py2.py3-none-any.whl
           pip3 install -e .
           pip3 install -e .[test]
