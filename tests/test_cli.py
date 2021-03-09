@@ -65,7 +65,7 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
         #x = subprocess.check_output('ls ' + str(tmpdir), shell=True)
         y = subprocess.check_output('ls ' + str(tmpdir) + '/examples', shell=True)
 
-        raise Exception(z.stdout + ' ::: ' + str(y))
+        raise Exception(z.stderr + ' ::: ' + str(y))
 
         # with open(example_ldap_file, 'rb') as f:
         #     content = f.read()
