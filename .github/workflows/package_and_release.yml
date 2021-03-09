@@ -37,6 +37,9 @@ jobs:
           python -V
       - name: Make Standalone
         run: |
+          alias pip=pip3
+          alias python=python3
+          python -V
           make standalone
         env:
           UST_EXTENSION: ${{matrix.extension_support}}
