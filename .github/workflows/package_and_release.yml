@@ -28,17 +28,15 @@ jobs:
           yum install -y epel-release
           yum install -y https://repo.ius.io/ius-release-el7.rpm
           yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-          yum install -y gcc python36u-devel python36u-pip python36u-virtualenv make
-          yum install -y python3-devel python3-pip python3-virtualenv
+          yum install -y gcc make python36u-devel python36u-pip python36u-virtualenv
           yum install -y python-devel python-pip python-virtualenv
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
-          python3 -V
 
-          python -V
       - name: Make Standalone
         run: |
           alias pip=pip3
           alias python=python3
+          python -V
           pip3 install external/okta-0.0.3.1-py2.py3-none-any.whl
           pip3 install -e .
           pip3 install -e .[test]
