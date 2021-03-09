@@ -51,9 +51,10 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
             return str(res_path / Path(umapi_tmp_file).parts[-1])
         return ''
 
-    x = subprocess.check_output ('ls' + str(tmpdir), shell=True)
+    x = subprocess.check_output ('ls ' + str(tmpdir), shell=True)
+    y = subprocess.check_output ('ls ' + str(tmpdir) + '/examples', shell=True)
 
-    raise Exception(str(tmpdir) + x)
+    raise Exception(str(tmpdir) + x + ' ::: ' + y)
     #
     # with monkeypatch.context() as m:
     #     m.setattr(resource, "get_resource", resource_patch)
