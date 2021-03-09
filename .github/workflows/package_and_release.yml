@@ -33,12 +33,12 @@ jobs:
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
 
       - name: Make Standalone
-        run: |          
+        run: |
           pip3 install external/okta-0.0.3.1-py2.py3-none-any.whl
           pip3 install -e .
           pip3 install -e .[test]
           pip3 install -e .[setup]
-          alias python=python3 & make standalone
+          alias python=python3 && make standalone
         env:
           UST_EXTENSION: ${{matrix.extension_support}}
       - name: Test with pytest
