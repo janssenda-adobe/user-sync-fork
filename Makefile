@@ -14,9 +14,10 @@ else
 endif
 
 standalone:
-	python -m pip3 install --upgrade pip
-	python -m pip3 install --upgrade pyinstaller
-	python -m pip3 install --upgrade setuptools
+	python -V
+	python -m pip install --upgrade pip
+	python -m pip install --upgrade pyinstaller
+	python -m pip install --upgrade setuptools
 	-$(RM) $(output_dir)
 	python .build/pre_build.py
 	pyinstaller --clean --noconfirm user-sync.spec
