@@ -25,7 +25,7 @@ jobs:
           python-version: '3.6'
       - name: Centos-Install dependencies
         run: |
-          yum install python3 python3-devel
+          yum -y install python3 python3-devel
           python -V
 #          yum install -y epel-release
 #          yum install -y https://repo.ius.io/ius-release-el7.rpm
