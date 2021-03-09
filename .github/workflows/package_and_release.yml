@@ -19,16 +19,15 @@ jobs:
             variant_tag: ""
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.6'
+#      - name: Set up Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: '3.6'
       - name: Centos-Install dependencies
         run: |
           yum install -y epel-release
           yum install -y https://repo.ius.io/ius-release-el7.rpm
           yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-          yum update -y
           yum install -y python36u-devel python36u-pip python36u-virtualenv
           yum install -y python-devel python-pip python-virtualenv
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
