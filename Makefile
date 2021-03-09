@@ -15,11 +15,11 @@ endif
 
 standalone:
 	python -V
-	python -m pip install --upgrade pip
-	python -m pip install --upgrade pyinstaller
-	python -m pip install --upgrade setuptools
+	python3 -m pip install --upgrade pip
+	python3 -m pip install --upgrade pyinstaller
+	python3 -m pip install --upgrade setuptools
 	-$(RM) $(output_dir)
-	python .build/pre_build.py
+	python3 .build/pre_build.py
 	pyinstaller --clean --noconfirm user-sync.spec
 
 test:
