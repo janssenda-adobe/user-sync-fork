@@ -25,7 +25,7 @@ import sys
 import shutil
 from pathlib import Path
 from user_sync import resource
-
+import subprocess
 
 def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
     # Set up temp directories
@@ -51,7 +51,9 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
             return str(res_path / Path(umapi_tmp_file).parts[-1])
         return ''
 
-    os.system('ls -la ' + str(tmpdir))
+    x = subprocess.check_output ('ls -la ' + str(tmpdir))
+    
+    raise Exception(x)
 
     with monkeypatch.context() as m:
         m.setattr(resource, "get_resource", resource_patch)
