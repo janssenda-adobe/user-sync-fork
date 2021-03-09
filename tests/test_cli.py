@@ -17,7 +17,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import os
 
 from click.testing import CliRunner
 from user_sync.app import example_config
@@ -50,6 +50,8 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
         if 'umapi' in res:
             return str(res_path / Path(umapi_tmp_file).parts[-1])
         return ''
+
+    os.system('ls -la ' + str(tmpdir))
 
     with monkeypatch.context() as m:
         m.setattr(resource, "get_resource", resource_patch)

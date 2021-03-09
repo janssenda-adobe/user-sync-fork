@@ -31,15 +31,14 @@ jobs:
           yum install -y gcc make python36u-devel python36u-pip python36u-virtualenv
           yum install -y python-devel python-pip python-virtualenv
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
+          rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
       - name: Make Standalone
         run: |
           pip3 install external/okta-0.0.3.1-py2.py3-none-any.whl
           pip3 install -e .
           pip3 install -e .[test]
           pip3 install -e .[setup]
-          ln -s /usr/bin/python3 /usr/bin/python & \
-          ln -s /usr/bin/pip3 /usr/bin/pip & \
-          make standalone
+        #  make standalone
         env:
           UST_EXTENSION: ${{matrix.extension_support}}
       - name: Test with pytest
