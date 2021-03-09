@@ -32,15 +32,16 @@ jobs:
           yum install -y python3-devel python3-pip python3-virtualenv make
           yum install -y pkgconfig openssl-devel dbus-glib-devel dbus-python libffi-devel
           python3 -V
-          alias pip=pip3
-          alias python=python3
+
           python -V
       - name: Make Standalone
         run: |
-          pip install external/okta-0.0.3.1-py2.py3-none-any.whl
-          pip install -e .
-          pip install -e .[test]
-          pip install -e .[setup]
+          alias pip=pip3
+          alias python=python3
+          pip3 install external/okta-0.0.3.1-py2.py3-none-any.whl
+          pip3 install -e .
+          pip3 install -e .[test]
+          pip3 install -e .[setup]
           make standalone
         env:
           UST_EXTENSION: ${{matrix.extension_support}}
