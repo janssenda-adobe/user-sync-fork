@@ -16,16 +16,12 @@ jobs:
     strategy:
       matrix:
         include:
-#          - extension_support: 0
-#            variant_tag: "-noext"
+          - extension_support: 0
+            variant_tag: "-noext"
           - extension_support: 1
             variant_tag: ""
     steps:
       - uses: actions/checkout@v2
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: '3.6'
       - name: Centos-Install dependencies
         run: |
           yum install -y epel-release
@@ -41,7 +37,7 @@ jobs:
           pip3 install -e .
           pip3 install -e .[test]
           pip3 install -e .[setup]
-        #  make standalone
+          make standalone
         env:
           UST_EXTENSION: ${{matrix.extension_support}}
       - name: Test with pytest
