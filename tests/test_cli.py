@@ -17,15 +17,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import os
+
+import shutil
+import sys
+from pathlib import Path
 
 from click.testing import CliRunner
-from user_sync.app import example_config
-import sys
-import shutil
-from pathlib import Path
+
 from user_sync import resource
-import subprocess
+from user_sync.app import example_config
+
 
 def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
     # Set up temp directories
@@ -51,7 +52,6 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
             return str(res_path / Path(umapi_tmp_file).parts[-1])
         return ''
 
-
     with monkeypatch.context() as m:
         m.setattr(resource, "get_resource", resource_patch)
 
@@ -59,18 +59,13 @@ def test_example_config_line_endings(tmpdir, monkeypatch, tmp_config_files):
         example_ldap_file = example_path / Path(ldap_tmp_file).parts[-1]
         example_ust_file = example_path / Path(root_tmp_file).parts[-1]
         example_umapi_file = example_path / Path(umapi_tmp_file).parts[-1]
-        z =runner.invoke(example_config, ['--ldap={}'.format(example_ldap_file), '--root={}'.format(example_ust_file),
+        runner.invoke(example_config, ['--ldap={}'.format(example_ldap_file), '--root={}'.format(example_ust_file),
                                        '--umapi={}'.format(example_umapi_file)])
 
-        #x = subprocess.check_output('ls ' + str(tmpdir), shell=True)
-        y = subprocess.check_output('ls ' + str(tmpdir) + '/examples', shell=True)
-
-        raise Exception(z.stderr + ' ::: ' + str(y))
-
-        # with open(example_ldap_file, 'rb') as f:
-        #     content = f.read()
-        # if sys.platform == 'win32':
-        #     assert b'\r\n' in content
-        # else:
-        #     assert b'\n' in content
-        #     assert b'\r' not in content
+        with open(example_ldap_file, 'rb') as f:
+            content = f.read()
+        if sys.platform == 'win32':
+            assert b'\r\n' in content
+        else:
+            assert b'\n' in content
+            assert b'\r' not in content

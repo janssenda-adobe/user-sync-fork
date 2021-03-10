@@ -8,6 +8,9 @@ on:
 jobs:
   centos:
     runs-on: ubuntu-latest
+    env:
+      LC_ALL: en_US.utf8
+      LANG: en_US.utf8
     container:
       image: centos:7
     strategy:
