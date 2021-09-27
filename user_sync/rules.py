@@ -773,6 +773,7 @@ class RuleProcessor(object):
     def update_umapi_user(self, umapi_info, user_key, umapi_connector,
                           attributes_to_update=None, groups_to_add=None, groups_to_remove=None,
                           umapi_user=None):
+        asdasdas
         # Note that the user may exist only in the directory, only in the umapi, or both at this point.
         # When we are updating an Adobe user who has been removed from the directory, we have to be careful to use
         # data from the umapi_user parameter and not try to get information from the directory.
